@@ -1,0 +1,118 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Syne', 'Inter', system-ui, -apple-system, sans-serif;
+    --color-orbit-gold: #e5c158;
+    --color-orbit-purple: #8b5cf6;
+    --color-orbit-pink: #ec4899;
+    --color-orbit-dark: #0a0a0c;
+    --color-orbit-card: #121319;
+}
+
+@layer base {
+    body {
+        background-color: #070709;
+        color: #f3f4f6;
+        font-family: var(--font-sans);
+        overflow-x: hidden;
+        selection-background-color: #e5c158;
+        selection-color: #000;
+    }
+}
+
+/* Glassmorphism and glows */
+.glass-panel {
+    background: rgba(18, 19, 25, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+    background: rgba(22, 23, 31, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    border-color: rgba(229, 193, 88, 0.4);
+    box-shadow: 0 10px 30px -10px rgba(229, 193, 88, 0.15);
+    transform: translateY(-3px);
+}
+
+.glow-orb-gold {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(229, 193, 88, 0.18) 0%, rgba(0,0,0,0) 70%);
+    filter: blur(40px);
+    pointer-events: none;
+}
+
+.glow-orb-purple {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(0,0,0,0) 70%);
+    filter: blur(50px);
+    pointer-events: none;
+}
+
+.glow-orb-pink {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(0,0,0,0) 70%);
+    filter: blur(45px);
+    pointer-events: none;
+}
+
+/* Orbit Animations */
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes floatSmooth {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.animate-spin-slow {
+    animation: spinSlow 35s linear infinite;
+}
+
+.animate-float {
+    animation: floatSmooth 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #070709;
+}
+::-webkit-scrollbar-thumb {
+    background: #27273a;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #e5c158;
+}
