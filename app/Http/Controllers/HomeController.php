@@ -79,6 +79,12 @@ class HomeController extends Controller
             ]
         ];
 
+        $loyaltyTiers = [
+            ['tier' => 'Спутник', 'cashback' => '5%', 'condition' => 'До 20 000 ₽ / мес', 'perk' => 'Приветственный коктейль'],
+            ['tier' => 'Орбита', 'cashback' => '10%', 'condition' => 'От 20 000 ₽ / мес', 'perk' => 'Приоритет бронирования'],
+            ['tier' => 'Невесомость', 'cashback' => '15%', 'condition' => 'От 50 000 ₽ / мес', 'perk' => 'Закрытые VIP ивенты & Персональный менеджер'],
+        ];
+
         $menu = [
             'kitchen' => [
                 [
@@ -152,7 +158,7 @@ class HomeController extends Controller
             ]
         ];
 
-        return view('welcome', compact('events', 'zones', 'menu'));
+        return view('welcome', compact('events', 'zones', 'menu', 'loyaltyTiers'));
     }
 
     public function storeBooking(Request $request)
