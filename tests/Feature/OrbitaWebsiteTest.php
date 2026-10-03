@@ -16,9 +16,9 @@ class OrbitaWebsiteTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('ОРБИТА');
-        $response->assertSee('ПРОСТРАНСТВО');
+        $response->assertSee('НЕВЕСОМОСТИ');
         $response->assertSee('Балконная Галерея');
-        $response->assertSee('Орбитальность');
+        $response->assertSee('ОРБИТАЛЬНОСТЬ');
     }
 
     public function test_table_booking_can_be_submitted_successfully()
