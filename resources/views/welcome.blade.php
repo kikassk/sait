@@ -1,222 +1,219 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth">
+<html lang="ru" class="scroll-smooth dark">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ОРБИТА — Космический Бар & Творческое Пространство</title>
+    <meta name="description" content="Атмосферный ресторан-бар и креативный хаб. Авторские коктейли, космическая кухня, живые события и DJ-сеты.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>ОРБИТА — Бар & Творческое Пространство</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    @vite(['resources/css/app.css'])
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030308;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Unbounded', sans-serif;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
 </head>
-<body class="bg-[#070709] text-gray-100 font-sans selection:bg-[#e5c158] selection:text-black min-h-screen relative overflow-x-hidden">
+<body class="bg-[#030308] text-slate-100 antialiased selection:bg-purple-500 selection:text-white">
 
-    <!-- Ambient Glowing Orbs background -->
-    <div class="fixed top-[-100px] left-[-100px] glow-orb-gold z-0 animate-pulse-glow"></div>
-    <div class="fixed top-[40%] right-[-150px] glow-orb-purple z-0 animate-pulse-glow" style="animation-delay: 1.5s;"></div>
-    <div class="fixed bottom-[-100px] left-[20%] glow-orb-pink z-0 animate-pulse-glow" style="animation-delay: 3s;"></div>
+    @php
+        $loyaltyTiers = [
+            ['tier' => 'Спутник', 'cashback' => '5%', 'condition' => 'До 20 000 ₽ / мес'],
+            ['tier' => 'Орбита', 'cashback' => '10%', 'condition' => 'От 20 000 ₽ / мес'],
+            ['tier' => 'Невесомость', 'cashback' => '15%', 'condition' => 'От 50 000 ₽ / мес + VIP доступ'],
+        ];
+    @endphp
 
-    <!-- Header Navigation -->
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-panel border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="#" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#e5c158] via-purple-600 to-pink-500 p-[2px] animate-spin-slow">
-                    <div class="w-full h-full bg-[#070709] rounded-full flex items-center justify-center">
-                        <span class="text-[#e5c158] font-black text-sm">O</span>
+    <!-- 3D Canvas Background -->
+    <div id="canvas-container"></div>
+
+    <div class="content-layer">
+        <!-- Navigation Bar -->
+        <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+                <a href="#hero" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 via-indigo-500 to-cyan-400 p-[2px] animate-spin-slow">
+                        <div class="w-full h-full bg-[#030308] rounded-full flex items-center justify-center">
+                            <span class="text-cyan-400 font-bold text-lg font-heading">О</span>
+                        </div>
                     </div>
-                </div>
-                <span class="font-extrabold text-2xl tracking-widest uppercase bg-gradient-to-r from-white via-gray-200 to-[#e5c158] bg-clip-text text-transparent group-hover:scale-105 transition-transform">
-                    ОРБИТА
-                </span>
-            </a>
-
-            <!-- Desktop Nav -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
-                <a href="#about" class="text-gray-300 hover:text-[#e5c158] transition-colors">О нас</a>
-                <a href="#space" class="text-gray-300 hover:text-[#e5c158] transition-colors">Пространство</a>
-                <a href="#events" class="text-gray-300 hover:text-[#e5c158] transition-colors">События</a>
-                <a href="#menu" class="text-gray-300 hover:text-[#e5c158] transition-colors">Меню</a>
-                <a href="#loyalty" class="text-gray-300 hover:text-[#e5c158] transition-colors">Орбитальность</a>
-                <a href="#contacts" class="text-gray-300 hover:text-[#e5c158] transition-colors">Контакты</a>
-            </nav>
-
-            <div class="flex items-center gap-4">
-                <button onclick="openBookingModal()" class="relative group px-6 py-2.5 rounded-full text-sm font-semibold tracking-wide text-black overflow-hidden transition-all duration-300 transform hover:scale-105">
-                    <span class="absolute inset-0 bg-gradient-to-r from-[#e5c158] via-amber-300 to-[#e5c158] group-hover:opacity-90"></span>
-                    <span class="relative z-10 flex items-center gap-2 uppercase tracking-wider text-xs font-bold">
-                        Забронировать
+                    <span class="text-xl font-black font-heading tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 group-hover:from-purple-400 group-hover:to-cyan-400 transition-all">
+                        ОРБИТА
                     </span>
-                </button>
-            </div>
-        </div>
-    </header>
+                </a>
 
-    <main class="relative z-10 pt-20">
+                <nav class="hidden md:flex items-center gap-8 bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-2.5 rounded-full shadow-2xl">
+                    <a href="#concept" class="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">Концепт</a>
+                    <a href="#zones" class="text-sm font-medium text-slate-300 hover:text-purple-400 transition-colors">Зоны</a>
+                    <a href="#events" class="text-sm font-medium text-slate-300 hover:text-pink-400 transition-colors">События</a>
+                    <a href="#menu" class="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">Меню</a>
+                    <a href="#loyalty" class="text-sm font-medium text-slate-300 hover:text-purple-400 transition-colors">Орбитальность</a>
+                    <a href="#contacts" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Контакты</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <button onclick="openBookingModal('Главная зона')" class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-full group bg-gradient-to-br from-purple-600 to-cyan-500 group-hover:from-purple-600 group-hover:to-cyan-500 hover:text-white text-white focus:ring-4 focus:outline-none focus:ring-cyan-800 shadow-lg shadow-cyan-500/30">
+                        <span class="relative px-5 py-2 transition-all ease-in duration-75 bg-[#030308] rounded-full group-hover:bg-opacity-0 font-heading text-xs tracking-wider uppercase">
+                            Забронировать
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
         <!-- Hero Section -->
-        <section class="min-h-[90vh] flex items-center justify-center relative px-4 sm:px-6 lg:px-8 py-20 overflow-hidden">
-            <div class="absolute inset-0 z-0">
-                <div class="absolute inset-0 bg-gradient-to-b from-[#070709]/60 via-[#070709]/80 to-[#070709]"></div>
-                <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1920&q=80" alt="Orbita Bar Interior" class="w-full h-full object-cover opacity-25 filter blur-[2px] scale-105">
-            </div>
-
-            <div class="max-w-5xl mx-auto text-center relative z-10 space-y-8">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-[#e5c158] text-xs font-bold uppercase tracking-widest border border-[#e5c158]/30">
-                    <span class="w-2 h-2 rounded-full bg-[#e5c158] animate-ping"></span>
-                    Исторический особняк на Яузской
+        <section id="hero" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+            <div class="max-w-5xl mx-auto px-4 text-center relative z-10">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 backdrop-blur-md mb-8">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="text-xs uppercase tracking-widest font-semibold text-cyan-300">Интерактивная 3D Вселенная</span>
                 </div>
 
-                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold uppercase tracking-tight text-white leading-tight">
-                    Двигайся вместе с <br>
-                    <span class="bg-gradient-to-r from-[#e5c158] via-purple-400 to-pink-500 bg-clip-text text-transparent">Орбитой</span>
+                <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-heading tracking-tight text-white mb-8 leading-none">
+                    ПРОСТРАНСТВО <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 animate-gradient">
+                        ВНЕ ПРИТЯЖЕНИЯ
+                    </span>
                 </h1>
 
-                <p class="max-w-2xl mx-auto text-gray-300 text-lg sm:text-xl font-light leading-relaxed">
-                    Днём — фэнси-бар с яркой кухней и творческими событиями.<br>
-                    Ночью — пространство с актуальным звуком и авторскими коктейлями.
+                <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+                    Симбиоз космической эстетики, гастрономии будущего и современной электронной музыки. Погрузитесь в интерактивный 3D мир бара «Орбита».
                 </p>
 
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <button onclick="openBookingModal()" class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-[#e5c158] to-amber-500 text-black font-extrabold text-sm uppercase tracking-wider hover:opacity-95 shadow-lg shadow-[#e5c158]/20 transition-all transform hover:-translate-y-1">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button onclick="openBookingModal('Главная сцена')" class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 text-white font-heading text-xs tracking-widest uppercase font-bold shadow-xl shadow-purple-600/30 hover:scale-105 transition-all duration-300">
                         Забронировать стол
                     </button>
-                    <a href="#menu" class="w-full sm:w-auto px-8 py-4 rounded-full glass-panel border border-white/20 text-white font-bold text-sm uppercase tracking-wider hover:border-[#e5c158] hover:text-[#e5c158] transition-all">
-                        Изучить меню
+                    <a href="#menu" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-xl text-slate-200 font-heading text-xs tracking-widest uppercase font-bold transition-all duration-300">
+                        Исследовать меню
                     </a>
                 </div>
 
-                <!-- Live Indicators -->
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 pt-12 max-w-3xl mx-auto">
-                    <div class="glass-card p-4 rounded-2xl text-left border border-white/5">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Режим работы</span>
-                        <p class="text-sm font-semibold text-white">Вс-Чт: 12:00 — 00:00</p>
-                        <p class="text-sm font-semibold text-[#e5c158]">Пт-Сб: 12:00 — 03:00</p>
+                <!-- Live stats counter badge -->
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                    <div class="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-2xl">
+                        <div class="text-2xl font-black font-heading text-cyan-400">4</div>
+                        <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Уникальных зоны</div>
                     </div>
-                    <div class="glass-card p-4 rounded-2xl text-left border border-white/5">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Локация</span>
-                        <p class="text-sm font-semibold text-white">ул. Яузская 1/15</p>
-                        <p class="text-xs text-gray-400">м. Китай-город / Таганская</p>
+                    <div class="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-2xl">
+                        <div class="text-2xl font-black font-heading text-purple-400">18+</div>
+                        <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Авторских коктейлей</div>
                     </div>
-                    <div class="glass-card p-4 rounded-2xl text-left border border-white/5 col-span-2 md:col-span-1">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Атмосфера</span>
-                        <p class="text-sm font-semibold text-white">Авторская кухня & Коктейли</p>
-                        <p class="text-xs text-purple-400">Live dj sets & квартирники</p>
+                    <div class="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-2xl">
+                        <div class="text-2xl font-black font-heading text-pink-400">3D</div>
+                        <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Графика Three.js</div>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-2xl">
+                        <div class="text-2xl font-black font-heading text-indigo-400">100%</div>
+                        <div class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Атмосфера</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- About Concept Section -->
-        <section id="about" class="py-24 px-4 sm:px-6 lg:px-8 relative">
-            <div class="max-w-7xl mx-auto">
+        <!-- Concept Section -->
+        <section id="concept" class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div class="space-y-6">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel text-xs text-purple-400 font-semibold tracking-widest uppercase">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs uppercase tracking-widest font-semibold mb-6">
                             О концепции
                         </div>
-                        <h2 class="text-3xl sm:text-5xl font-extrabold text-white leading-tight uppercase">
-                            Творческий кластер <br>
-                            <span class="text-[#e5c158]">& Бар-Трансформер</span>
+                        <h2 class="text-3xl sm:text-5xl font-bold font-heading text-white mb-6 leading-tight">
+                            ГДЕ ИСКУССТВО ВСТРЕЧАЕТ <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">ТЕХНОЛОГИИ</span>
                         </h2>
-                        <p class="text-gray-300 leading-relaxed text-base sm:text-lg">
-                            ОРБИТА — место, где звезды тусуются не на небе, а за соседним столиком.
-                            Здесь вдохновение встречается со вкусом: авторская кухня с азиатскими мотивами, свежая барная карта, мастер-классы, джемы с молодыми артистами и уютные акустические концерты.
+                        <p class="text-slate-300 text-lg mb-6 leading-relaxed">
+                            «Орбита» — это больше, чем просто бар или ресторан. Это мультимедийное пространство для тех, кто ищет вдохновение, глубокий звук и неповторимую атмосферу.
                         </p>
-                        <div class="p-6 rounded-2xl glass-card border-l-4 border-l-[#e5c158] space-y-2">
-                            <p class="text-sm italic text-gray-300">
-                                «Я давно мечтал о пространстве, в котором смогу делиться тем, что мне важно. Место, в котором можно создавать новое, искать друзей и соратников, куда можно приехать за свежими идеями и просто круто провести время.»
-                            </p>
-                            <span class="text-xs font-bold text-[#e5c158] block uppercase tracking-wider">— Автор и создатель Ваня Дмитриенко</span>
+                        <p class="text-slate-400 text-base mb-8 leading-relaxed">
+                            Каждый элемент нашего пространства — от световых партитур до молекулярной подачи напитков — создан для погружения в состояние невесомости.
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="border-l-2 border-purple-500 pl-4">
+                                <h4 class="font-heading text-white font-bold text-sm">Звук Hi-End</h4>
+                                <p class="text-xs text-slate-400 mt-1">Акустическая система минимизирует искажения</p>
+                            </div>
+                            <div class="border-l-2 border-cyan-500 pl-4">
+                                <h4 class="font-heading text-white font-bold text-sm">3D Визуал</h4>
+                                <p class="text-xs text-slate-400 mt-1">Динамическое световое оформление</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="relative grid grid-cols-2 gap-4">
-                        <div class="space-y-4">
-                            <img src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=600&q=80" alt="Cocktail" class="rounded-3xl object-cover h-64 w-full shadow-2xl glass-card">
-                            <div class="p-6 rounded-3xl glass-panel border border-white/10 text-center">
-                                <span class="text-4xl font-extrabold text-[#e5c158] block">4</span>
-                                <span class="text-xs text-gray-400 uppercase tracking-widest">Уникальные зоны</span>
+                    <div class="relative">
+                        <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-purple-900/20 to-black/60 p-8 backdrop-blur-xl">
+                            <div class="aspect-video rounded-2xl bg-gradient-to-tr from-purple-900/40 via-indigo-900/20 to-cyan-900/40 border border-white/10 flex items-center justify-center relative overflow-hidden group">
+                                <div class="text-center p-6 relative z-10">
+                                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-300">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </div>
+                                    <h3 class="font-heading font-bold text-white text-xl">Виртуальный Тур 3D</h3>
+                                    <p class="text-slate-400 text-xs mt-2">Вращайте орбитную сцену мышкой для лучшего обзора</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="space-y-4 pt-8">
-                            <div class="p-6 rounded-3xl glass-panel border border-white/10 text-center">
-                                <span class="text-4xl font-extrabold text-purple-400 block">100+</span>
-                                <span class="text-xs text-gray-400 uppercase tracking-widest">Мероприятий в год</span>
-                            </div>
-                            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80" alt="Live Event" class="rounded-3xl object-cover h-64 w-full shadow-2xl glass-card">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Interactive Zones (Space) -->
-        <section id="space" class="py-24 px-4 sm:px-6 lg:px-8 bg-black/40 relative">
-            <div class="max-w-7xl mx-auto space-y-12">
-                <div class="text-center max-w-3xl mx-auto space-y-4">
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#e5c158] glass-panel px-4 py-1.5 rounded-full">Пространство</span>
-                    <h2 class="text-3xl sm:text-5xl font-extrabold text-white uppercase">Атмосферные зоны особняка</h2>
-                    <p class="text-gray-400 text-sm sm:text-base">Каждая локация создана под свое настроение: от живых выступлений и громких танцев до уединенных бесед у камина.</p>
+        <!-- Zones Section -->
+        <section id="zones" class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs uppercase tracking-widest font-semibold mb-4">
+                        Локации
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-bold font-heading text-white">ПРОСТРАНСТВА И ЗОНЫ</h2>
+                    <p class="text-slate-400 text-base mt-4">Выберите зону для вашего вечера или важного события</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($zones as $zone)
-                        <div class="glass-card rounded-3xl p-6 flex flex-col justify-between h-full group hover:border-[#e5c158]/50 transition-all">
-                            <div class="space-y-4">
-                                <div class="w-12 h-12 rounded-2xl bg-[#e5c158]/10 text-[#e5c158] flex items-center justify-center group-hover:bg-[#e5c158] group-hover:text-black transition-colors">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $zone['icon'] }}"></path>
-                                    </svg>
+                        <div class="group relative rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-xl hover:bg-white/10 transition-all duration-500 flex flex-col justify-between hover:-translate-y-2">
+                            <div>
+                                <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold font-heading mb-6 group-hover:scale-110 transition-transform">
+                                    0{{ $loop->iteration }}
                                 </div>
-                                <div>
-                                    <span class="text-xs text-purple-400 font-bold uppercase tracking-wider block mb-1">{{ $zone['badge'] }}</span>
-                                    <h3 class="text-xl font-bold text-white">{{ $zone['name'] }}</h3>
-                                    <span class="text-xs text-gray-400 font-medium block mt-1">Вместимость: {{ $zone['capacity'] }}</span>
-                                </div>
-                                <p class="text-gray-300 text-sm leading-relaxed">{{ $zone['description'] }}</p>
+                                <h3 class="text-xl font-bold font-heading text-white mb-2">{{ $zone['name'] }}</h3>
+                                <p class="text-slate-400 text-xs leading-relaxed mb-6">{{ $zone['description'] }}</p>
                             </div>
-                            <button onclick="openBookingModalWithZone('{{ $zone['name'] }}')" class="mt-6 w-full py-2.5 rounded-xl border border-white/10 text-xs font-bold uppercase tracking-wider text-gray-300 hover:text-black hover:bg-[#e5c158] hover:border-[#e5c158] transition-all">
-                                Забронировать зону
-                            </button>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        <!-- Events Section -->
-        <section id="events" class="py-24 px-4 sm:px-6 lg:px-8 relative">
-            <div class="max-w-7xl mx-auto space-y-12">
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-purple-400 glass-panel px-4 py-1.5 rounded-full">Афиша</span>
-                        <h2 class="text-3xl sm:text-5xl font-extrabold text-white uppercase mt-4">Ближайшие события</h2>
-                    </div>
-                    <p class="text-gray-400 text-sm max-w-md">Каждую неделю у нас проходят живые сеты, квартирники, культурные маркеты и встречи с приглашенными гостями.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach($events as $event)
-                        <div class="glass-card rounded-3xl overflow-hidden flex flex-col justify-between group">
-                            <div class="relative h-48 overflow-hidden">
-                                <img src="{{ $event['image'] }}" alt="{{ $event['title'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                <div class="absolute inset-0 bg-gradient-to-t from-[#070709] via-transparent to-transparent"></div>
-                                <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-[#e5c158] border border-white/10">
-                                    {{ $event['tag'] }}
-                                </span>
-                            </div>
-                            <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-                                <div>
-                                    <span class="text-xs text-purple-400 font-bold block mb-1">{{ $event['date'] }}</span>
-                                    <h3 class="text-lg font-bold text-white group-hover:text-[#e5c158] transition-colors">{{ $event['title'] }}</h3>
-                                    <p class="text-xs text-gray-400 mt-2 leading-relaxed">{{ $event['description'] }}</p>
+                            <div>
+                                <div class="flex items-center justify-between text-xs text-slate-300 pt-4 border-t border-white/10 mb-6">
+                                    <span>Вместимость:</span>
+                                    <span class="font-semibold text-cyan-400">{{ $zone['capacity'] }}</span>
                                 </div>
-                                <button onclick="openBookingModal()" class="w-full py-2 rounded-xl bg-white/5 hover:bg-[#e5c158] text-white hover:text-black font-semibold text-xs uppercase tracking-wider transition-all">
-                                    Попасть на событие
+                                <button onclick="openBookingModal('{{ $zone['name'] }}')" class="w-full py-3 rounded-xl bg-white/10 hover:bg-gradient-to-r hover:from-purple-600 hover:to-cyan-500 text-white font-heading text-xs uppercase tracking-wider transition-all duration-300">
+                                    Забронировать
                                 </button>
                             </div>
                         </div>
@@ -225,355 +222,459 @@
             </div>
         </section>
 
-        <!-- Menu Section (Interactive) -->
-        <section id="menu" class="py-24 px-4 sm:px-6 lg:px-8 bg-black/50 relative">
-            <div class="max-w-6xl mx-auto space-y-12">
-                <div class="text-center space-y-4">
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#e5c158] glass-panel px-4 py-1.5 rounded-full">В нашем меню</span>
-                    <h2 class="text-3xl sm:text-5xl font-extrabold text-white uppercase">Авторская Кухня & Бар</h2>
-                    <p class="text-gray-400 text-sm max-w-xl mx-auto">Яркий гастрономический стиль smart-casual и миксология высочайшего уровня.</p>
+        <!-- Menu Section -->
+        <section id="menu" class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs uppercase tracking-widest font-semibold mb-4">
+                        Гастрономия
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-bold font-heading text-white">АВТОРСКОЕ МЕНЮ</h2>
+                </div>
 
-                    <!-- Tab Switcher -->
-                    <div class="inline-flex p-1.5 rounded-full glass-panel border border-white/10 mt-6">
-                        <button id="tab-kitchen" onclick="switchMenu('kitchen')" class="px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all bg-[#e5c158] text-black">
-                            Меню Кухни
+                <!-- Menu Switcher Tabs -->
+                <div class="flex justify-center mb-12">
+                    <div class="inline-flex p-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl">
+                        <button id="tab-bar" onclick="switchMenu('bar')" class="px-8 py-3 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-lg">
+                            Барная карта
                         </button>
-                        <button id="tab-bar" onclick="switchMenu('bar')" class="px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all text-gray-400 hover:text-white">
-                            Барная Карта
+                        <button id="tab-kitchen" onclick="switchMenu('kitchen')" class="px-8 py-3 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white">
+                            Кухня
                         </button>
                     </div>
                 </div>
 
-                <!-- Kitchen Menu Grid -->
-                <div id="menu-kitchen" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach($menu['kitchen'] as $item)
-                        <div class="glass-card p-6 rounded-2xl flex justify-between items-start gap-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <h3 class="text-lg font-bold text-white">{{ $item['name'] }}</h3>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-500/20 text-purple-300 border border-purple-500/30">{{ $item['tag'] }}</span>
-                                </div>
-                                <p class="text-xs text-gray-400 leading-relaxed">{{ $item['desc'] }}</p>
-                            </div>
-                            <span class="text-lg font-extrabold text-[#e5c158] whitespace-nowrap">{{ $item['price'] }}</span>
-                        </div>
-                    @endforeach
-                </div>
-
-                <!-- Bar Menu Grid (Hidden by default) -->
-                <div id="menu-bar" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                <!-- Bar Menu Items -->
+                <div id="menu-bar" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     @foreach($menu['bar'] as $item)
-                        <div class="glass-card p-6 rounded-2xl flex justify-between items-start gap-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <h3 class="text-lg font-bold text-white">{{ $item['name'] }}</h3>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">{{ $item['tag'] }}</span>
-                                </div>
-                                <p class="text-xs text-gray-400 leading-relaxed">{{ $item['desc'] }}</p>
+                        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:border-cyan-500/50 transition-all flex justify-between items-start">
+                            <div>
+                                <h4 class="font-heading font-bold text-white text-base mb-1">{{ $item['name'] }}</h4>
+                                <p class="text-slate-400 text-xs mb-3">{{ $item['desc'] }}</p>
+                                <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                    {{ $item['tag'] }}
+                                </span>
                             </div>
-                            <span class="text-lg font-extrabold text-[#e5c158] whitespace-nowrap">{{ $item['price'] }}</span>
+                            <div class="text-lg font-black font-heading text-cyan-400 whitespace-nowrap ml-4">
+                                {{ $item['price'] }}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Kitchen Menu Items -->
+                <div id="menu-kitchen" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                    @foreach($menu['kitchen'] as $item)
+                        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:border-purple-500/50 transition-all flex justify-between items-start">
+                            <div>
+                                <h4 class="font-heading font-bold text-white text-base mb-1">{{ $item['name'] }}</h4>
+                                <p class="text-slate-400 text-xs mb-3">{{ $item['desc'] }}</p>
+                                <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                    {{ $item['tag'] }}
+                                </span>
+                            </div>
+                            <div class="text-lg font-black font-heading text-purple-400 whitespace-nowrap ml-4">
+                                {{ $item['price'] }}
+                            </div>
                         </div>
                     @endforeach
                 </div>
             </div>
         </section>
 
-        <!-- Loyalty Program (Орбитальность) -->
-        <section id="loyalty" class="py-24 px-4 sm:px-6 lg:px-8 relative">
-            <div class="max-w-7xl mx-auto">
-                <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-white/10 relative overflow-hidden bg-gradient-to-r from-purple-900/30 via-[#070709] to-amber-900/30">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative z-10">
-                        <div class="space-y-6">
-                            <span class="text-xs font-bold uppercase tracking-widest text-amber-400 glass-panel px-4 py-1.5 rounded-full">Бонусы & Привилегии</span>
-                            <h2 class="text-3xl sm:text-5xl font-extrabold text-white uppercase leading-tight">
-                                Система <br>
-                                <span class="bg-gradient-to-r from-[#e5c158] to-purple-400 bg-clip-text text-transparent">Орбитальность</span>
-                            </h2>
-                            <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
-                                Набирай баллы и поднимайся по 4 уровням, открывая новые возможности: закрытые мероприятия, лимитированный мерч, скидки в баре и эксклюзивные приглашения.
-                            </p>
-                            <a href="https://t.me/orbitabar_bot" target="_blank" rel="noopener" class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-extrabold text-xs uppercase tracking-widest hover:opacity-90 shadow-xl transition-all transform hover:scale-105">
-                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.97 9.28c-.15.68-.55.84-1.12.52l-3.05-2.25-1.47 1.42c-.16.16-.3.3-.62.3l.22-3.11 5.66-5.11c.25-.22-.05-.34-.38-.12l-7 4.41-3.02-.95c-.66-.21-.67-.66.14-.98l11.8-4.55c.55-.2 1.03.13.84.94z"/></svg>
-                                Зарегистрироваться в Telegram-боте
-                            </a>
-                        </div>
+        <!-- Events Section -->
+        <section id="events" class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs uppercase tracking-widest font-semibold mb-4">
+                        Лайн-ап
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-bold font-heading text-white">ПРЕДСТОЯЩИЕ СОБЫТИЯ</h2>
+                </div>
 
-                        <!-- Level Badges -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="p-5 rounded-2xl glass-card border border-white/10 space-y-2">
-                                <div class="w-8 h-8 rounded-full bg-gray-700/50 flex items-center justify-center font-bold text-xs text-gray-300">L1</div>
-                                <h4 class="text-white font-bold text-sm">Спутник</h4>
-                                <p class="text-[11px] text-gray-400">Приветственный бонус и кэшбэк 5% с первого визита.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    @foreach($events as $event)
+                        <div class="rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-xl flex flex-col justify-between hover:border-pink-500/50 transition-all duration-300">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-xs font-bold font-heading text-pink-400">{{ $event['date'] }}</span>
+                                    <span class="text-xs text-slate-400">{{ $event['category'] }}</span>
+                                </div>
+                                <h3 class="text-xl font-bold font-heading text-white mb-2">{{ $event['title'] }}</h3>
+                                <p class="text-slate-400 text-xs mb-6 leading-relaxed">{{ $event['description'] }}</p>
                             </div>
-                            <div class="p-5 rounded-2xl glass-card border border-purple-500/30 space-y-2">
-                                <div class="w-8 h-8 rounded-full bg-purple-600/30 flex items-center justify-center font-bold text-xs text-purple-300">L2</div>
-                                <h4 class="text-white font-bold text-sm">Планета</h4>
-                                <p class="text-[11px] text-gray-400">Кэшбэк 8%, коктейль в подарок в день рождения.</p>
-                            </div>
-                            <div class="p-5 rounded-2xl glass-card border border-pink-500/30 space-y-2">
-                                <div class="w-8 h-8 rounded-full bg-pink-600/30 flex items-center justify-center font-bold text-xs text-pink-300">L3</div>
-                                <h4 class="text-white font-bold text-sm">Созвездие</h4>
-                                <p class="text-[11px] text-gray-400">Кэшбэк 12% + бронь депозитных столов без очереди.</p>
-                            </div>
-                            <div class="p-5 rounded-2xl glass-card border border-[#e5c158]/50 space-y-2">
-                                <div class="w-8 h-8 rounded-full bg-[#e5c158]/30 flex items-center justify-center font-bold text-xs text-[#e5c158]">L4</div>
-                                <h4 class="text-white font-bold text-sm">Галактика</h4>
-                                <p class="text-[11px] text-gray-400">Кэшбэк 15%, доступ на секретные закрытые ивенты.</p>
+                            <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-300">Тег: {{ $event['tag'] }}</span>
+                                <button onclick="openBookingModal('Событие: {{ $event['title'] }}')" class="text-xs font-heading font-bold text-cyan-400 hover:text-cyan-300 uppercase">
+                                    Записаться &rarr;
+                                </button>
                             </div>
                         </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- Loyalty Program Section -->
+        <section id="loyalty" class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="rounded-3xl bg-gradient-to-r from-purple-900/40 via-indigo-900/20 to-cyan-900/40 border border-white/10 p-8 sm:p-12 backdrop-blur-2xl">
+                    <div class="max-w-3xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs uppercase tracking-widest font-semibold mb-6">
+                            Программа лояльности
+                        </div>
+                        <h2 class="text-3xl sm:text-5xl font-bold font-heading text-white mb-6">«ОРБИТАЛЬНОСТЬ»</h2>
+                        <p class="text-slate-300 text-base mb-8 leading-relaxed">
+                            Копите орбитальные баллы за каждый визит и заказ. Повышайте статус и получайте эксклюзивный доступ к закрытым вечеринкам и комплиментам от шеф-бармена.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
+                        @foreach($loyaltyTiers as $tier)
+                            <div class="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                                <div class="text-xs text-slate-400 uppercase font-bold tracking-wider mb-2">Уровень {{ $loop->iteration }}</div>
+                                <h4 class="font-heading font-bold text-xl text-white mb-1">{{ $tier['tier'] }}</h4>
+                                <div class="text-cyan-400 font-black font-heading text-2xl mb-2">{{ $tier['cashback'] }}</div>
+                                <p class="text-slate-400 text-xs">{{ $tier['condition'] }}</p>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contacts & Location Map -->
-        <section id="contacts" class="py-24 px-4 sm:px-6 lg:px-8 bg-black/60 relative">
-            <div class="max-w-7xl mx-auto space-y-12">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Contact Details -->
-                    <div class="space-y-6 lg:col-span-1">
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#e5c158] glass-panel px-4 py-1.5 rounded-full">Контакты</span>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-white uppercase">Ждем вас в гости</h2>
-
-                        <div class="space-y-4 text-sm text-gray-300">
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[#e5c158] shrink-0 mt-1">📍</div>
-                                <div>
-                                    <strong class="text-white block">Адрес:</strong>
-                                    г. Москва, ул. Яузская 1/15<br>
-                                    <span class="text-xs text-gray-400">м. Китай-город, м. Таганская</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[#e5c158] shrink-0 mt-1">🕒</div>
-                                <div>
-                                    <strong class="text-white block">Время работы:</strong>
-                                    Вс – Чт: 12:00 — 00:00<br>
-                                    Пт – Сб: 12:00 — 03:00
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[#e5c158] shrink-0 mt-1">📞</div>
-                                <div>
-                                    <strong class="text-white block">Телефон:</strong>
-                                    <a href="tel:+74951410555" class="text-[#e5c158] hover:underline">+7 (495) 141-05-55</a>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[#e5c158] shrink-0 mt-1">✉️</div>
-                                <div>
-                                    <strong class="text-white block">Email:</strong>
-                                    <a href="mailto:orbita.yauza@gmail.com" class="text-gray-300 hover:text-white">orbita.yauza@gmail.com</a>
-                                </div>
-                            </div>
+        <!-- Contacts & Location Section -->
+        <section id="contacts" class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs uppercase tracking-widest font-semibold mb-6">
+                            Контакты
                         </div>
+                        <h2 class="text-3xl sm:text-5xl font-bold font-heading text-white mb-8">ЖДЕМ ВАС НА ОРБИТЕ</h2>
 
-                        <div class="pt-4 flex gap-4">
-                            <a href="https://yandex.ru/maps/org/orbita/200600732534/" target="_blank" rel="noopener" class="w-full py-3 rounded-2xl glass-card text-center text-xs font-bold uppercase tracking-wider text-[#e5c158] hover:bg-[#e5c158] hover:text-black transition-all">
-                                Построить маршрут
-                            </a>
+                        <div class="space-y-6 text-slate-300">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold">📍</div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase">Адрес</div>
+                                    <div class="font-semibold text-white">г. Москва, ул. Космонавтов, д. 12</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold">⏰</div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase">Режим работы</div>
+                                    <div class="font-semibold text-white">Пн - Чт: 18:00 - 02:00 | Пт - Сб: 18:00 - 06:00</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 font-bold">📞</div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase">Телефон для брони</div>
+                                    <div class="font-semibold text-white">+7 (495) 888-00-11</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Yandex Map Frame Mockup / Container -->
-                    <div class="lg:col-span-2 rounded-3xl overflow-hidden glass-card border border-white/10 min-h-[350px] relative">
-                        <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Aa51483f6d6e1bdd5fd51fccd95c1ec128ee72b0b3000d23fd9abd084b712a3df&amp;source=constructor" width="100%" height="100%" frameborder="0" class="min-h-[400px] w-full filter contrast-125"></iframe>
+                    <!-- Embedded Interactive Map -->
+                    <div class="rounded-3xl overflow-hidden border border-white/10 h-80 sm:h-auto min-h-[300px] relative bg-slate-900">
+                        <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A021b36585141b7ddae441b897e9ed2ddf3e0c03490919df434ec9c1a0be5f606&amp;source=constructor" width="100%" height="100%" frameborder="0" class="w-full h-full grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition-all duration-500"></iframe>
                     </div>
                 </div>
             </div>
         </section>
-    </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-white/10 py-12 px-4 sm:px-6 lg:px-8 bg-black/90 relative z-10 text-xs text-gray-500">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-3">
-                <span class="font-extrabold text-white text-lg tracking-widest">ОРБИТА</span>
-                <span>© {{ date('Y') }} Все права защищены.</span>
+        <!-- Footer -->
+        <footer class="border-t border-white/10 py-12 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="text-slate-400 text-xs">
+                    © 2026 ОРБИТА БАР. Все права защищены.
+                </div>
+                <div class="flex items-center gap-6 text-slate-400 text-xs">
+                    <a href="#" class="hover:text-cyan-400 transition-colors">Telegram</a>
+                    <a href="#" class="hover:text-purple-400 transition-colors">VKontakte</a>
+                    <a href="#" class="hover:text-pink-400 transition-colors">Instagram</a>
+                </div>
             </div>
-            <div class="flex gap-6">
-                <a href="#about" class="hover:text-gray-300">О нас</a>
-                <a href="#space" class="hover:text-gray-300">Залы</a>
-                <a href="#menu" class="hover:text-gray-300">Меню</a>
-                <a href="#contacts" class="hover:text-gray-300">Контакты</a>
-            </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     <!-- Booking Modal -->
-    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="glass-panel w-full max-w-lg rounded-3xl border border-white/10 p-6 sm:p-8 relative shadow-2xl transform scale-95 transition-transform duration-300" id="booking-modal-card">
-            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white text-xl font-bold">✕</button>
-
-            <h3 class="text-2xl font-extrabold text-white uppercase mb-2">Бронирование стола</h3>
-            <p class="text-xs text-gray-400 mb-6">Заполните форму, и мы оперативно подтвердим вашу бронь.</p>
+    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
+        <div class="bg-[#0b0c16] border border-white/20 rounded-3xl p-6 sm:p-8 max-w-lg w-full relative shadow-2xl">
+            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white font-bold text-xl">&times;</button>
+            <h3 class="font-heading font-bold text-2xl text-white mb-2">БРОНИРОВАНИЕ СТОЛА</h3>
+            <p id="modal-subtitle" class="text-xs text-slate-400 mb-6">Выберите дату и параметры вашего визита</p>
 
             <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-4">
+                <input type="hidden" id="booking-zone" name="zone" value="Главная зона">
+
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Ваше имя *</label>
-                    <input type="text" name="name" required placeholder="Иван" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:border-[#e5c158] focus:outline-none">
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Ваше имя</label>
+                    <input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors" placeholder="Александр">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Телефон</label>
+                    <input type="tel" name="phone" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors" placeholder="+7 (999) 000-00-00">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Телефон *</label>
-                        <input type="tel" name="phone" required placeholder="+7 (999) 000-00-00" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:border-[#e5c158] focus:outline-none">
+                        <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Дата</label>
+                        <input type="date" name="date" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Гости *</label>
-                        <select name="guests" required class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:border-[#e5c158] focus:outline-none">
-                            <option value="1">1 человек</option>
-                            <option value="2" selected>2 человека</option>
-                            <option value="3">3 человека</option>
-                            <option value="4">4 человека</option>
-                            <option value="5">5+ человек</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Дата *</label>
-                        <input type="date" name="date" required value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:border-[#e5c158] focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Время *</label>
-                        <select name="time" required class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:border-[#e5c158] focus:outline-none">
-                            <option value="12:00">12:00</option>
-                            <option value="14:00">14:00</option>
-                            <option value="16:00">16:00</option>
-                            <option value="18:00">18:00</option>
-                            <option value="20:00" selected>20:00</option>
-                            <option value="22:00">22:00</option>
-                            <option value="00:00">00:00</option>
-                        </select>
+                        <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Время</label>
+                        <input type="time" name="time" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Локация / Зона</label>
-                    <select id="booking-zone-select" name="zone" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:border-[#e5c158] focus:outline-none">
-                        <option value="Главный Бар">Главный Бар</option>
-                        <option value="Сцена & Танцпол">Сцена & Танцпол</option>
-                        <option value="Каминная Гостиная">Каминная Гостиная</option>
-                        <option value="Балконная Галерея">Балконная Галерея</option>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Количество гостей</label>
+                    <select name="guests" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors">
+                        <option value="1" class="bg-slate-900">1 человек</option>
+                        <option value="2" selected class="bg-slate-900">2 человека</option>
+                        <option value="4" class="bg-slate-900">4 человека</option>
+                        <option value="6" class="bg-slate-900">6+ человек</option>
                     </select>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Пожелания</label>
-                    <textarea name="comment" rows="2" placeholder="Особые пожелания или поводы" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:border-[#e5c158] focus:outline-none"></textarea>
-                </div>
-
-                <div id="booking-message" class="hidden text-xs p-3 rounded-xl font-medium"></div>
-
-                <button type="submit" id="booking-submit-btn" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#e5c158] to-amber-500 text-black font-extrabold text-xs uppercase tracking-widest hover:opacity-90 transition-all">
-                    Затвердить бронирование
+                <button type="submit" class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-heading font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-transform">
+                    Подтвердить бронирование
                 </button>
             </form>
+
+            <div id="booking-success" class="hidden text-center py-8">
+                <div class="w-16 h-16 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">✓</div>
+                <h4 class="font-heading font-bold text-xl text-white mb-2">БРОНЬ ПОДТВЕРЖДЕНА!</h4>
+                <p class="text-slate-300 text-xs">Мы свяжемся с вами в течение 10 минут для подтверждения деталей.</p>
+            </div>
         </div>
     </div>
 
-    <!-- Frontend Interactive Logic Script -->
+    <!-- Interactive Three.js 3D Background Script -->
     <script>
-        function switchMenu(category) {
-            const kitchenEl = document.getElementById('menu-kitchen');
-            const barEl = document.getElementById('menu-bar');
-            const tabKitchen = document.getElementById('tab-kitchen');
+        // --- 3D THREE.JS ANIMATED SCENE ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+
+        // Add subtle fog for depth
+        scene.fog = new THREE.FogExp2(0x030308, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 30;
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const pointLight1 = new THREE.PointLight(0xa855f7, 3, 50); // Purple glow
+        pointLight1.position.set(15, 15, 10);
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0x06b6d4, 3, 50); // Cyan glow
+        pointLight2.position.set(-15, -15, 10);
+        scene.add(pointLight2);
+
+        // 3D Objects Group (Orbit System)
+        const orbitGroup = new THREE.Group();
+        scene.add(orbitGroup);
+
+        // Central Glowing Torus (Orbital Ring)
+        const ringGeo = new THREE.TorusGeometry(8, 0.3, 16, 100);
+        const ringMat = new THREE.MeshStandardMaterial({
+            color: 0x8b5cf6,
+            roughness: 0.2,
+            metalness: 0.8,
+            wireframe: true
+        });
+        const mainRing = new THREE.Mesh(ringGeo, ringMat);
+        orbitGroup.add(mainRing);
+
+        // Secondary Outer Ring
+        const ringGeo2 = new THREE.TorusGeometry(12, 0.15, 16, 100);
+        const ringMat2 = new THREE.MeshStandardMaterial({
+            color: 0x06b6d4,
+            roughness: 0.3,
+            metalness: 0.9,
+            wireframe: true
+        });
+        const outerRing = new THREE.Mesh(ringGeo2, ringMat2);
+        outerRing.rotation.x = Math.PI / 3;
+        orbitGroup.add(outerRing);
+
+        // Floating 3D Spheres / Planets
+        const spheres = [];
+        const sphereGeo = new THREE.IcosahedronGeometry(1.2, 2);
+        const colors = [0xa855f7, 0x06b6d4, 0xec4899, 0x6366f1];
+
+        for (let i = 0; i < 12; i++) {
+            const mat = new THREE.MeshStandardMaterial({
+                color: colors[i % colors.length],
+                roughness: 0.2,
+                metalness: 0.7,
+                flatShading: true
+            });
+            const sphere = new THREE.Mesh(sphereGeo, mat);
+
+            const radius = 10 + Math.random() * 12;
+            const angle = (i / 12) * Math.PI * 2;
+            sphere.position.x = Math.cos(angle) * radius;
+            sphere.position.y = (Math.random() - 0.5) * 10;
+            sphere.position.z = Math.sin(angle) * radius;
+
+            sphere.userData = {
+                angle: angle,
+                radius: radius,
+                speed: 0.003 + Math.random() * 0.005
+            };
+
+            spheres.push(sphere);
+            orbitGroup.add(sphere);
+        }
+
+        // Starfield Particles Background
+        const particlesCount = 800;
+        const particleGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 100;
+            positions[i + 1] = (Math.random() - 0.5) * 100;
+            positions[i + 2] = (Math.random() - 0.5) * 100;
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMat = new THREE.PointsMaterial({
+            size: 0.15,
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.8
+        });
+        const starfield = new THREE.Points(particleGeo, particleMat);
+        scene.add(starfield);
+
+        // Mouse Parallax Interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+        });
+
+        // Window Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            // Smooth parallax lerp
+            targetX += (mouseX - targetX) * 0.05;
+            targetY += (mouseY - targetY) * 0.05;
+
+            orbitGroup.rotation.y = elapsedTime * 0.15 + targetX * 2;
+            orbitGroup.rotation.x = Math.sin(elapsedTime * 0.1) * 0.2 + targetY * 2;
+
+            // Animate spheres on orbit
+            spheres.forEach((s) => {
+                s.userData.angle += s.userData.speed;
+                s.position.x = Math.cos(s.userData.angle) * s.userData.radius;
+                s.position.z = Math.sin(s.userData.angle) * s.userData.radius;
+                s.rotation.x += 0.01;
+                s.rotation.y += 0.01;
+            });
+
+            starfield.rotation.y = elapsedTime * 0.02;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // --- PAGE INTERACTIVE LOGIC ---
+        function switchMenu(type) {
+            const barMenu = document.getElementById('menu-bar');
+            const kitchenMenu = document.getElementById('menu-kitchen');
             const tabBar = document.getElementById('tab-bar');
+            const tabKitchen = document.getElementById('tab-kitchen');
 
-            if (category === 'kitchen') {
-                kitchenEl.classList.remove('hidden');
-                barEl.classList.add('hidden');
-                tabKitchen.className = 'px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all bg-[#e5c158] text-black';
-                tabBar.className = 'px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all text-gray-400 hover:text-white';
+            if (type === 'bar') {
+                barMenu.classList.remove('hidden');
+                kitchenMenu.classList.add('hidden');
+                tabBar.className = "px-8 py-3 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-lg";
+                tabKitchen.className = "px-8 py-3 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white";
             } else {
-                kitchenEl.classList.add('hidden');
-                barEl.classList.remove('hidden');
-                tabBar.className = 'px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all bg-[#e5c158] text-black';
-                tabKitchen.className = 'px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all text-gray-400 hover:text-white';
+                kitchenMenu.classList.remove('hidden');
+                barMenu.classList.add('hidden');
+                tabKitchen.className = "px-8 py-3 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-lg";
+                tabBar.className = "px-8 py-3 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white";
             }
         }
 
-        function openBookingModal() {
+        function openBookingModal(zoneName) {
+            document.getElementById('booking-zone').value = zoneName;
+            document.getElementById('modal-subtitle').innerText = 'Локация: ' + zoneName;
             const modal = document.getElementById('booking-modal');
-            const card = document.getElementById('booking-modal-card');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            card.classList.remove('scale-95');
-            card.classList.add('scale-100');
-        }
-
-        function openBookingModalWithZone(zoneName) {
-            const select = document.getElementById('booking-zone-select');
-            if (select) {
-                for (let option of select.options) {
-                    if (option.value === zoneName) {
-                        option.selected = true;
-                        break;
-                    }
-                }
-            }
-            openBookingModal();
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
         }
 
         function closeBookingModal() {
             const modal = document.getElementById('booking-modal');
-            const card = document.getElementById('booking-modal-card');
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            card.classList.remove('scale-100');
-            card.classList.add('scale-95');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('booking-form').classList.remove('hidden');
+                document.getElementById('booking-success').classList.add('hidden');
+            }, 300);
         }
 
-        async function submitBooking(event) {
+        function submitBooking(event) {
             event.preventDefault();
             const form = event.target;
-            const submitBtn = document.getElementById('booking-submit-btn');
-            const msgBox = document.getElementById('booking-message');
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'ОТПРАВКА...';
-
             const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
 
-            try {
-                const response = await fetch('{{ route("bookings.store") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                msgBox.classList.remove('hidden', 'bg-red-500/20', 'text-red-300', 'bg-emerald-500/20', 'text-emerald-300');
-
-                if (response.ok && result.success) {
-                    msgBox.classList.add('bg-emerald-500/20', 'text-emerald-300');
-                    msgBox.innerText = result.message;
-                    form.reset();
-                    setTimeout(() => {
-                        closeBookingModal();
-                        msgBox.classList.add('hidden');
-                    }, 2500);
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    form.classList.add('hidden');
+                    document.getElementById('booking-success').classList.remove('hidden');
                 } else {
-                    msgBox.classList.add('bg-red-500/20', 'text-red-300');
-                    msgBox.innerText = result.message || 'Ошибка бронирования. Проверьте введенные данные.';
+                    alert('Ошибка при бронировании. Проверьте введенные данные.');
                 }
-            } catch (err) {
-                msgBox.classList.remove('hidden');
-                msgBox.classList.add('bg-red-500/20', 'text-red-300');
-                msgBox.innerText = 'Произошла ошибка при отправке. Попробуйте еще раз.';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'ЗАТВЕРДИТЬ БРОНИРОВАНИЕ';
-            }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Произошла ошибка отправки.');
+            });
         }
     </script>
 </body>
