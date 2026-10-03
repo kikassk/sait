@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Booking;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,35 +16,31 @@ class OrbitaWebsiteTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('ОРБИТА');
-        $response->assertSee('Двигайся вместе с');
+        $response->assertSee('ПРОСТРАНСТВО');
         $response->assertSee('Балконная Галерея');
         $response->assertSee('Орбитальность');
     }
 
     public function test_table_booking_can_be_submitted_successfully()
     {
-        $bookingData = [
-            'name' => 'Алексей Иванов',
-            'phone' => '+7 (999) 111-22-33',
-            'email' => 'alexey@example.com',
-            'date' => date('Y-m-d', strtotime('+1 day')),
-            'time' => '20:00',
+        $response = $this->postJson('/api/bookings', [
+            'name' => 'Иван Иванов',
+            'phone' => '+7 (999) 123-45-67',
+            'date' => now()->addDays(2)->format('Y-m-d'),
+            'time' => '19:00',
             'guests' => 4,
-            'zone' => 'Каминная Гостиная',
-            'comment' => 'Столик у окна пожалуйста'
-        ];
-
-        $response = $this->postJson('/api/bookings', $bookingData);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
+            'zone' => 'Главный Бар',
+            'comment' => 'Просьба у окна'
         ]);
 
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
         $this->assertDatabaseHas('bookings', [
-            'name' => 'Алексей Иванов',
-            'phone' => '+7 (999) 111-22-33',
-            'zone' => 'Каминная Гостиная'
+            'name' => 'Иван Иванов',
+            'phone' => '+7 (999) 123-45-67',
+            'zone' => 'Главный Бар',
+            'guests' => 4
         ]);
     }
 
