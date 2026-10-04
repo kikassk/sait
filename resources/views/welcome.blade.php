@@ -27,6 +27,23 @@
         .font-display { font-family: 'Syne', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
+        /* Custom Interactive Glow Cursor */
+        #custom-cursor {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 70%);
+            border: 1px solid rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: transform 0.15s ease-out, opacity 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
         /* Custom Artistic Card Styles */
         .art-card-glass {
             background: linear-gradient(135deg, rgba(22, 22, 28, 0.75) 0%, rgba(12, 12, 16, 0.85) 100%);
@@ -35,12 +52,13 @@
             border-radius: 2.2rem;
             box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
         }
 
         .art-card-glass:hover {
             border-color: rgba(255, 255, 255, 0.22);
-            transform: translateY(-6px);
-            box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 255, 255, 0.04);
+            transform: translateY(-6px) rotateX(1.5deg) rotateY(-1.5deg);
+            box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 255, 255, 0.05);
         }
 
         .art-card-pill {
@@ -90,6 +108,7 @@
             filter: blur(140px);
             pointer-events: none;
             z-index: 0;
+            transition: background 1s ease;
         }
 
         /* Map Dark Filter */
@@ -107,6 +126,19 @@
             display: flex;
             width: 200%;
             animation: ticker 28s linear infinite;
+        }
+
+        /* Audio Visualizer Waves */
+        .sound-wave-bar {
+            width: 3px;
+            height: 12px;
+            background: #ffffff;
+            border-radius: 2px;
+            animation: soundWave 1.2s infinite ease-in-out alternate;
+        }
+        @keyframes soundWave {
+            0% { height: 4px; }
+            100% { height: 16px; }
         }
 
         /* Table Blueprint SVG Styling */
@@ -132,13 +164,35 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #f4f4f5;
         }
+
+        /* Shiny Metallic VIP Card Effect */
+        .vip-card-shiny {
+            background: linear-gradient(135deg, rgba(30,30,38,0.95) 0%, rgba(10,10,14,0.98) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .vip-card-shiny::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+            transform: rotate(30deg);
+            animation: shine 6s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateY(-100%) rotate(30deg); }
+            100% { transform: translateY(100%) rotate(30deg); }
+        }
     </style>
 </head>
 <body class="relative bg-zinc-950 text-zinc-100 antialiased selection:bg-zinc-800 selection:text-white">
 
+    <!-- Custom Pointer Follower Glow -->
+    <div id="custom-cursor"></div>
+
     <!-- Ambient Background Lighting -->
-    <div class="ambient-glow w-[650px] h-[650px] bg-zinc-800/15 top-0 left-1/2 -translate-x-1/2"></div>
-    <div class="ambient-glow w-[850px] h-[850px] bg-zinc-700/10 top-[1200px] right-0"></div>
+    <div id="bg-glow-1" class="ambient-glow w-[650px] h-[650px] bg-zinc-800/20 top-0 left-1/2 -translate-x-1/2"></div>
+    <div id="bg-glow-2" class="ambient-glow w-[850px] h-[850px] bg-zinc-700/10 top-[1200px] right-0"></div>
 
     <!-- 3D WebGL Canvas (Kinetic Orbital Astrolabe Core) -->
     <div id="canvas-container" class="fixed inset-0 z-0 pointer-events-none opacity-90"></div>
@@ -161,18 +215,33 @@
             </a>
 
             <!-- Nav Links -->
-            <div class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-zinc-300">
+            <div class="hidden lg:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-zinc-300">
                 <a href="#concept" class="hover:text-white transition-colors">Концепция</a>
+                <a href="#mixology-navigator" class="hover:text-white transition-colors">Миксология</a>
                 <a href="#events" class="hover:text-white transition-colors">DJ Афиша</a>
                 <a href="#floorplan" class="hover:text-white transition-colors">3D Схема</a>
-                <a href="#menu" class="hover:text-white transition-colors">Гастрономия</a>
+                <a href="#vip-pass" class="hover:text-white transition-colors">VIP Карта</a>
                 <a href="#map-section" class="hover:text-white transition-colors">Карта</a>
             </div>
 
-            <!-- Action -->
-            <button onclick="openBookingModal()" class="art-button-primary px-6 py-2.5 text-xs font-bold uppercase tracking-wider cursor-pointer">
-                Забронировать
-            </button>
+            <!-- Actions Right -->
+            <div class="flex items-center gap-4">
+                <!-- Ambient Audio Atmosphere Toggle -->
+                <button onclick="toggleAudioAtmosphere()" id="audio-toggle-btn" title="Звуковая Атмосфера" class="p-2.5 rounded-full bg-zinc-900 border border-zinc-700/80 hover:border-zinc-500 text-zinc-300 transition-all flex items-center gap-2 cursor-pointer">
+                    <svg id="audio-icon" class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.287a6 6 0 010 7.427M9 9H5a1 1 0 00-1 1v4a1 1 0 001 1h4l5 5V4L9 9z"/>
+                    </svg>
+                    <div id="audio-bars" class="hidden flex items-center gap-0.5">
+                        <span class="sound-wave-bar" style="animation-delay: 0s;"></span>
+                        <span class="sound-wave-bar" style="animation-delay: 0.2s;"></span>
+                        <span class="sound-wave-bar" style="animation-delay: 0.4s;"></span>
+                    </div>
+                </button>
+
+                <button onclick="openBookingModal()" class="art-button-primary px-6 py-2.5 text-xs font-bold uppercase tracking-wider cursor-pointer">
+                    Забронировать
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -197,10 +266,13 @@
 
         <!-- HERO SECTION -->
         <section id="concept" class="min-h-[85vh] flex flex-col justify-center items-center text-center relative py-12">
-            <!-- 3D Indicator Badge -->
-            <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-zinc-900/80 border border-zinc-700/80 backdrop-blur-xl mb-8">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                <span class="text-xs font-mono text-zinc-300 uppercase tracking-widest">3D KINETIC ORBITAL ASTROLABE CORE</span>
+
+            <!-- 3D Theme Switcher Bar -->
+            <div class="inline-flex items-center gap-3 p-1.5 rounded-full bg-zinc-900/90 border border-zinc-700/80 backdrop-blur-xl mb-8 shadow-xl">
+                <span class="px-3 text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Lighting Mode:</span>
+                <button onclick="set3DLighting('chrome')" id="theme-btn-chrome" class="px-3 py-1 rounded-full text-xs font-mono bg-white text-zinc-950 font-bold transition-all cursor-pointer">Neo-Gold</button>
+                <button onclick="set3DLighting('cyan')" id="theme-btn-cyan" class="px-3 py-1 rounded-full text-xs font-mono bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer">Deep Cyan</button>
+                <button onclick="set3DLighting('purple')" id="theme-btn-purple" class="px-3 py-1 rounded-full text-xs font-mono bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer">Quantum Violet</button>
             </div>
 
             <h1 class="font-display text-5xl sm:text-7xl lg:text-9xl font-black tracking-tight max-w-6xl leading-[1.02] mb-8">
@@ -242,7 +314,7 @@
                         <span class="text-xs font-mono text-zinc-400 uppercase">02 / Ночной Матрикс</span>
                         <div class="icon-badge">
                             <svg class="w-4 h-4 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM9 10l12-3"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2Z"/>
                             </svg>
                         </div>
                     </div>
@@ -261,6 +333,113 @@
                     </div>
                     <div class="font-display text-2xl font-bold text-white mb-2">Исторический Особняк</div>
                     <p class="text-xs text-zinc-400 leading-relaxed">330 м² уникальной архитектуры на ул. Яузская, 1/15, Китай-город.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE MIXOLOGY MOOD NAVIGATOR -->
+        <section id="mixology-navigator" class="space-y-12 scroll-mt-32">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">
+                        <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L5.4 15.12a2 2 0 00-1.022.547l-1.096 1.096a2 2 0 00.586 3.414l2.828.808a10 10 0 005.608 0l2.828-.808a2 2 0 00.586-3.414l-1.096-1.096z"/>
+                        </svg>
+                        <span>// AI MIXOLOGY MATRIX</span>
+                    </div>
+                    <h2 class="font-display text-4xl sm:text-5xl font-black text-white">Миксологический Навигатор</h2>
+                </div>
+                <span class="text-xs font-mono text-zinc-400 border border-zinc-800 px-4 py-2 rounded-full bg-zinc-900">Интерактивный Подбор Напитка</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Mood Buttons Selector -->
+                <div class="lg:col-span-5 space-y-4">
+                    <p class="text-xs font-mono text-zinc-400 uppercase">Выберите ваше текущее настроение вечерней орбиты:</p>
+
+                    <div class="space-y-3">
+                        <button onclick="selectCocktailMood('deep')" id="mood-btn-deep" class="w-full text-left p-5 rounded-2xl art-card-glass border-white/20 transition-all cursor-pointer flex items-center justify-between group">
+                            <div>
+                                <div class="font-display font-bold text-lg text-white">Deep & Smoked // Медитативный</div>
+                                <div class="text-xs text-zinc-400 mt-1">Бурбон, древесный дым, тёмные биттеры</div>
+                            </div>
+                            <div class="icon-badge group-hover:scale-110 transition-transform">
+                                <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+                            </div>
+                        </button>
+
+                        <button onclick="selectCocktailMood('energy')" id="mood-btn-energy" class="w-full text-left p-5 rounded-2xl art-card-glass transition-all cursor-pointer flex items-center justify-between group">
+                            <div>
+                                <div class="font-display font-bold text-lg text-white">Citrus & Kinetic // Энергичный</div>
+                                <div class="text-xs text-zinc-400 mt-1">Джин, юдзу, белый персик, лемонграсс</div>
+                            </div>
+                            <div class="icon-badge group-hover:scale-110 transition-transform">
+                                <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                        </button>
+
+                        <button onclick="selectCocktailMood('sparkling')" id="mood-btn-sparkling" class="w-full text-left p-5 rounded-2xl art-card-glass transition-all cursor-pointer flex items-center justify-between group">
+                            <div>
+                                <div class="font-display font-bold text-lg text-white">Zero Gravity // Легкий & Игристый</div>
+                                <div class="text-xs text-zinc-400 mt-1">Текила, жасминовая содовая, спелая маракуйя</div>
+                            </div>
+                            <div class="icon-badge group-hover:scale-110 transition-transform">
+                                <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Pairing Display Card -->
+                <div class="lg:col-span-7 art-card-glass p-8 sm:p-10 space-y-8 border-zinc-700 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <span id="pair-tag" class="px-3.5 py-1.5 rounded-full text-xs font-mono bg-zinc-800 text-zinc-200 border border-zinc-700">ИТАЛЬЯНСКАЯ КЛАССИКА</span>
+                        <span id="pair-abv" class="text-xs font-mono text-zinc-400">22% ABV // 250 ML</span>
+                    </div>
+
+                    <div>
+                        <div class="text-xs font-mono text-zinc-500 uppercase tracking-widest">Рекомендуемый Коктейль</div>
+                        <h3 id="pair-title" class="font-display text-3xl sm:text-4xl font-bold text-white mt-1">MIDNIGHT ECLIPSE</h3>
+                        <p id="pair-desc" class="text-xs text-zinc-400 mt-3 leading-relaxed">Бурбон 8-летней выдержки, выпаренный портвейн, ежевичный биттер, дым дуба.</p>
+                    </div>
+
+                    <!-- Sensory Flavor Profile Gauges -->
+                    <div class="space-y-3 font-mono text-xs">
+                        <div>
+                            <div class="flex justify-between text-zinc-400 mb-1"><span>Крепость / Strength</span><span id="gauge-val-1">85%</span></div>
+                            <div class="w-full bg-zinc-900 rounded-full h-2 overflow-hidden border border-zinc-800">
+                                <div id="gauge-bar-1" class="bg-white h-full transition-all duration-700" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-zinc-400 mb-1"><span>Сладость / Sweetness</span><span id="gauge-val-2">35%</span></div>
+                            <div class="w-full bg-zinc-900 rounded-full h-2 overflow-hidden border border-zinc-800">
+                                <div id="gauge-bar-2" class="bg-zinc-400 h-full transition-all duration-700" style="width: 35%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-zinc-400 mb-1"><span>Аромат / Aroma</span><span id="gauge-val-3">95%</span></div>
+                            <div class="w-full bg-zinc-900 rounded-full h-2 overflow-hidden border border-zinc-800">
+                                <div id="gauge-bar-3" class="bg-white h-full transition-all duration-700" style="width: 95%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ideal Food Pairing -->
+                    <div class="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="icon-badge">
+                                <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-white">Идеальный фуд-пэйринг:</div>
+                                <div id="pair-food" class="text-[11px] text-zinc-400">Утиная Грудка Sous-Vide со соусом из вяленой вишни</div>
+                            </div>
+                        </div>
+                        <button onclick="openBookingModal()" class="art-button-primary px-4 py-2 text-[11px] uppercase cursor-pointer">Заказать</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -361,7 +540,7 @@
                         <rect width="100%" height="100%" fill="url(#grid)" />
 
                         <!-- Zone 1: Main Bar Area -->
-                        <g id="zone-bar-svg" class="table-node" onclick="openBookingWithTable('Барный Зал', 'Стол #1 (4 чел)')">
+                        <g id="zone-bar-svg" class="table-node" onclick="openBookingWithTable('Главный Бар', 'Стол #1 (4 чел)')">
                             <rect x="50" y="80" width="380" height="340" rx="20" fill="rgba(39, 39, 42, 0.4)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
                             <text x="70" y="120" fill="#ffffff" font-family="Syne" font-size="20" font-weight="bold">ГЛАВНЫЙ БАРНЫЙ ЗАЛ</text>
                             <text x="70" y="145" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">40 Посадочных мест // Контактный Бар</text>
@@ -419,108 +598,80 @@
             </div>
         </section>
 
-        <!-- GASTRONOMY & MIXOLOGY SHOWCASE -->
-        <section id="menu" class="space-y-12 scroll-mt-32">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                        <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L5.4 15.12a2 2 0 00-1.022.547l-1.096 1.096a2 2 0 00.586 3.414l2.828.808a10 10 0 005.608 0l2.828-.808a2 2 0 00.586-3.414l-1.096-1.096z"/>
-                        </svg>
-                        <span>// HIGH GASTRONOMY & MIXOLOGY</span>
-                    </div>
-                    <h2 class="font-display text-4xl sm:text-5xl font-black text-white">Авторская Карта</h2>
+        <!-- RESIDENT CLUB VIP DIGITAL CARD GENERATOR -->
+        <section id="vip-pass" class="space-y-12 scroll-mt-32">
+            <div class="text-center max-w-3xl mx-auto space-y-3">
+                <div class="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500">
+                    <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+                    </svg>
+                    <span>// ORBITA RESIDENT CLUB</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleMenuTab('cocktails')" id="tab-btn-cocktails" class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-zinc-950 transition-all cursor-pointer">
-                        Коктейли
-                    </button>
-                    <button onclick="toggleMenuTab('kitchen')" id="tab-btn-kitchen" class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer">
-                        Кухня
-                    </button>
-                </div>
+                <h2 class="font-display text-4xl sm:text-5xl font-black text-white">Цифровая Карта Резидента</h2>
+                <p class="text-zinc-400 text-sm">Сгенерируйте индивидуальную клубную карту с привилегиями и пропуском на закрытые ивенты</p>
             </div>
 
-            <!-- Cocktails View -->
-            <div id="menu-cocktails" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="art-card-glass p-8 space-y-6 relative overflow-hidden group">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-display font-bold text-white">01</div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Generator Controls -->
+                <div class="lg:col-span-5 art-card-glass p-8 space-y-6">
                     <div>
-                        <span class="text-xs font-mono text-zinc-400 uppercase">Signature Cocktail</span>
-                        <h3 class="font-display text-2xl font-bold text-white mt-1">ORBITA SIGNAL #1</h3>
-                        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Джин на лемонграссе, кордиал из белого персика, юдзу, золотая пыльца.</p>
+                        <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Имя на карте</label>
+                        <input type="text" id="vip-input-name" oninput="updateVIPCard()" value="АЛЕКСАНДР В." class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500">
                     </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-zinc-800 font-mono">
-                        <span class="text-xs text-zinc-500">300 мл // 14% ABV</span>
-                        <span class="font-bold text-lg text-white">890 ₽</span>
+
+                    <div>
+                        <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Статус Клуба</label>
+                        <select id="vip-input-tier" onchange="updateVIPCard()" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500">
+                            <option value="ORBITAL RESIDENT">ORBITAL RESIDENT (Cashback 10%)</option>
+                            <option value="BLACK MATRIX VIP">BLACK MATRIX VIP (Secret Lounge Access)</option>
+                            <option value="FOUNDER MEMBER">FOUNDER MEMBER (Personal Concierge)</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-4 border-t border-zinc-800 flex items-center justify-between text-xs font-mono text-zinc-400">
+                        <span>Цифровой ID: <span id="vip-id-display" class="text-white font-bold">#ORB-9842</span></span>
+                        <button onclick="downloadVIPPass()" class="art-button-primary px-4 py-2 uppercase text-[10px] cursor-pointer">Сохранить</button>
                     </div>
                 </div>
 
-                <div class="art-card-glass p-8 space-y-6 relative overflow-hidden group border-zinc-700">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-display font-bold text-white">02</div>
-                    <div>
-                        <span class="text-xs font-mono text-zinc-400 uppercase">Smoked Bourbon</span>
-                        <h3 class="font-display text-2xl font-bold text-white mt-1">MIDNIGHT ECLIPSE</h3>
-                        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Бурбон 8-летней выдержки, выпаренный портвейн, ежевичный биттер, дым дуба.</p>
-                    </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-zinc-800 font-mono">
-                        <span class="text-xs text-zinc-500">250 мл // 22% ABV</span>
-                        <span class="font-bold text-lg text-white">950 ₽</span>
-                    </div>
-                </div>
+                <!-- Live Shiny VIP Card Visualizer -->
+                <div class="lg:col-span-7 flex justify-center">
+                    <div id="vip-card-element" class="vip-card-shiny w-full max-w-md aspect-[1.58/1] rounded-3xl p-8 border border-zinc-700/80 shadow-2xl flex flex-col justify-between text-white transition-transform duration-500 hover:scale-105">
+                        <!-- Top Row -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <circle cx="12" cy="12" r="9" stroke-dasharray="2 2"/>
+                                        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <span class="font-display font-black text-xl tracking-wider">ОРБИТА</span>
+                            </div>
+                            <span id="vip-tier-badge" class="px-3 py-1 rounded-full text-[10px] font-mono bg-white/10 border border-white/20 text-zinc-200">ORBITAL RESIDENT</span>
+                        </div>
 
-                <div class="art-card-glass p-8 space-y-6 relative overflow-hidden group">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-display font-bold text-white">03</div>
-                    <div>
-                        <span class="text-xs font-mono text-zinc-400 uppercase">Tropical Zero Gravity</span>
-                        <h3 class="font-display text-2xl font-bold text-white mt-1">ZERO GRAVITY</h3>
-                        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Текила Reposado, кордиал из спелой маракуйи, содовая из жасмина.</p>
-                    </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-zinc-800 font-mono">
-                        <span class="text-xs text-zinc-500">350 мл // 12% ABV</span>
-                        <span class="font-bold text-lg text-white">850 ₽</span>
-                    </div>
-                </div>
-            </div>
+                        <!-- Middle Code & Hologram -->
+                        <div class="my-4 flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] font-mono text-zinc-400 uppercase">MEMBER NAME</div>
+                                <div id="vip-card-name" class="font-display font-extrabold text-2xl tracking-wide uppercase">АЛЕКСАНДР В.</div>
+                            </div>
+                            <!-- Dynamic Holographic Pass SVG Icon -->
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400/20 via-emerald-400/20 to-indigo-400/20 border border-white/30 flex items-center justify-center shadow-inner">
+                                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                        </div>
 
-            <!-- Kitchen View (Hidden by default) -->
-            <div id="menu-kitchen" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="art-card-glass p-8 space-y-6 relative overflow-hidden">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-display font-bold text-white">01</div>
-                    <div>
-                        <span class="text-xs font-mono text-zinc-400 uppercase">Cold Starter</span>
-                        <h3 class="font-display text-2xl font-bold text-white mt-1">Тартар из Тунца</h3>
-                        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Свежий желтопёрый тунец, авокадо хасс, понзу из юдзу, хрустящий чипс из нори.</p>
-                    </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-zinc-800 font-mono">
-                        <span class="text-xs text-zinc-500">180 г</span>
-                        <span class="font-bold text-lg text-white">1 100 ₽</span>
-                    </div>
-                </div>
-
-                <div class="art-card-glass p-8 space-y-6 relative overflow-hidden">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-display font-bold text-white">02</div>
-                    <div>
-                        <span class="text-xs font-mono text-zinc-400 uppercase">Main Course</span>
-                        <h3 class="font-display text-2xl font-bold text-white mt-1">Утиная Грудка Sous-Vide</h3>
-                        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Соус из вяленой вишни, пюре из печеного пастернака и запеченный пак-чой.</p>
-                    </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-zinc-800 font-mono">
-                        <span class="text-xs text-zinc-500">280 г</span>
-                        <span class="font-bold text-lg text-white">1 450 ₽</span>
-                    </div>
-                </div>
-
-                <div class="art-card-glass p-8 space-y-6 relative overflow-hidden">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-display font-bold text-white">03</div>
-                    <div>
-                        <span class="text-xs font-mono text-zinc-400 uppercase">Risotto</span>
-                        <h3 class="font-display text-2xl font-bold text-white mt-1">Трюфельный Ризотто</h3>
-                        <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Итальянский рис Карнароли, белые грибы, пармезан 24 мес, стружка свежего трюфеля.</p>
-                    </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-zinc-800 font-mono">
-                        <span class="text-xs text-zinc-500">250 г</span>
-                        <span class="font-bold text-lg text-white">1 250 ₽</span>
+                        <!-- Bottom Numbers -->
+                        <div class="flex items-end justify-between border-t border-white/10 pt-4 font-mono text-xs text-zinc-400">
+                            <div>
+                                <span>VALID THRU: </span><span class="text-white font-bold">12/28</span>
+                            </div>
+                            <span id="vip-card-id" class="text-white tracking-widest font-bold">#ORB-9842-88</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -617,8 +768,10 @@
             </div>
             <div class="flex items-center gap-8 text-xs font-mono text-zinc-400">
                 <a href="#concept" class="hover:text-white">Концепция</a>
+                <a href="#mixology-navigator" class="hover:text-white">Миксология</a>
                 <a href="#events" class="hover:text-white">Афиша</a>
                 <a href="#floorplan" class="hover:text-white">Схема</a>
+                <a href="#vip-pass" class="hover:text-white">VIP Карта</a>
                 <a href="#map-section" class="hover:text-white">Карта</a>
             </div>
         </div>
@@ -697,22 +850,131 @@
     <script>
         document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
 
-        function toggleMenuTab(tab) {
-            const cocktails = document.getElementById('menu-cocktails');
-            const kitchen = document.getElementById('menu-kitchen');
-            const btnC = document.getElementById('tab-btn-cocktails');
-            const btnK = document.getElementById('tab-btn-kitchen');
+        // Custom Cursor Movement Physics
+        const customCursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', (e) => {
+            if (customCursor) {
+                customCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+            }
+        });
 
-            if (tab === 'cocktails') {
-                cocktails.classList.remove('hidden');
-                kitchen.classList.add('hidden');
-                btnC.className = 'px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-zinc-950 transition-all cursor-pointer';
-                btnK.className = 'px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer';
+        // Cocktail Mood Matrix Selection Data
+        const cocktailMoods = {
+            deep: {
+                title: "MIDNIGHT ECLIPSE",
+                tag: "SMOKED BOURBON",
+                abv: "22% ABV // 250 ML",
+                desc: "Бурбон 8-летней выдержки, выпаренный портвейн, ежевичный биттер, дым дубовой щепы.",
+                g1: "85%", g2: "35%", g3: "95%",
+                food: "Утиная Грудка Sous-Vide с вишневым соусом"
+            },
+            energy: {
+                title: "ORBITA SIGNAL #1",
+                tag: "CITRUS BOTANICAL",
+                abv: "14% ABV // 300 ML",
+                desc: "Джин на лемонграссе, кордиал из спелого белого персика, юдзу, золотая пищевая пыльца.",
+                g1: "45%", g2: "65%", g3: "88%",
+                food: "Тартар из Желтопёрого Тунца с нори"
+            },
+            sparkling: {
+                title: "ZERO GRAVITY",
+                tag: "TROPICAL ZERO-G",
+                abv: "12% ABV // 350 ML",
+                desc: "Текила Reposado, кордиал из маракуйи, натуральная содовая из лепестков жасмина.",
+                g1: "30%", g2: "80%", g3: "75%",
+                food: "Трюфельный Ризотто с грибами"
+            }
+        };
+
+        function selectCocktailMood(mood) {
+            const data = cocktailMoods[mood];
+            if (!data) return;
+
+            document.getElementById('pair-title').innerText = data.title;
+            document.getElementById('pair-tag').innerText = data.tag;
+            document.getElementById('pair-abv').innerText = data.abv;
+            document.getElementById('pair-desc').innerText = data.desc;
+            document.getElementById('pair-food').innerText = data.food;
+
+            document.getElementById('gauge-val-1').innerText = data.g1;
+            document.getElementById('gauge-bar-1').style.width = data.g1;
+
+            document.getElementById('gauge-val-2').innerText = data.g2;
+            document.getElementById('gauge-bar-2').style.width = data.g2;
+
+            document.getElementById('gauge-val-3').innerText = data.g3;
+            document.getElementById('gauge-bar-3').style.width = data.g3;
+
+            ['deep', 'energy', 'sparkling'].forEach(m => {
+                const btn = document.getElementById(`mood-btn-${m}`);
+                if (m === mood) {
+                    btn.classList.add('border-white/30');
+                } else {
+                    btn.classList.remove('border-white/30');
+                }
+            });
+        }
+
+        // VIP Pass Card Generator
+        function updateVIPCard() {
+            const nameInput = document.getElementById('vip-input-name').value || 'АЛЕКСАНДР В.';
+            const tierSelect = document.getElementById('vip-input-tier').value;
+
+            document.getElementById('vip-card-name').innerText = nameInput;
+            document.getElementById('vip-tier-badge').innerText = tierSelect;
+        }
+
+        function downloadVIPPass() {
+            alert('Цифровая карта резидента сохранена в ваш Apple / Google Wallet!');
+        }
+
+        // Web Audio Synthesizer Atmosphere Toggle
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let osc1 = null, osc2 = null, gainNode = null;
+
+        function toggleAudioAtmosphere() {
+            const bars = document.getElementById('audio-bars');
+            const icon = document.getElementById('audio-icon');
+
+            if (!isAudioPlaying) {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                // Ambient Low Pad Frequencies (Warm Ambient Binaural Synth)
+                osc1 = audioCtx.createOscillator();
+                osc2 = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(110, audioCtx.currentTime); // A2
+
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(164.81, audioCtx.currentTime); // E3
+
+                gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+
+                osc1.connect(gainNode);
+                osc2.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc1.start();
+                osc2.start();
+
+                isAudioPlaying = true;
+                if (bars) bars.classList.remove('hidden');
+                if (icon) icon.classList.add('text-emerald-400');
             } else {
-                cocktails.classList.add('hidden');
-                kitchen.classList.remove('hidden');
-                btnK.className = 'px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-zinc-950 transition-all cursor-pointer';
-                btnC.className = 'px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer';
+                if (gainNode) gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+                setTimeout(() => {
+                    if (osc1) osc1.stop();
+                    if (osc2) osc2.stop();
+                }, 200);
+
+                isAudioPlaying = false;
+                if (bars) bars.classList.add('hidden');
+                if (icon) icon.classList.remove('text-emerald-400');
             }
         }
 
@@ -765,6 +1027,9 @@
             }
         }
 
+        // Global Three.js Lighting Switcher
+        let set3DLighting = () => {};
+
         // THREE.JS 3D KINETIC ORBITAL ASTROLABE CORE STAGE
         window.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('canvas-container');
@@ -779,7 +1044,7 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Studio Lighting
+            // Studio Lighting Setup
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
             scene.add(ambientLight);
 
@@ -875,6 +1140,34 @@
             const particleMat = new THREE.PointsMaterial({ size: 0.05, color: 0x94a3b8, transparent: true, opacity: 0.45 });
             const particles = new THREE.Points(particleGeo, particleMat);
             scene.add(particles);
+
+            // Dynamic 3D Theme Switcher Functionality
+            set3DLighting = function(mode) {
+                const btnC = document.getElementById('theme-btn-chrome');
+                const btnCy = document.getElementById('theme-btn-cyan');
+                const btnP = document.getElementById('theme-btn-purple');
+
+                [btnC, btnCy, btnP].forEach(b => {
+                    if (b) b.className = 'px-3 py-1 rounded-full text-xs font-mono bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer';
+                });
+
+                if (mode === 'cyan') {
+                    if (btnCy) btnCy.className = 'px-3 py-1 rounded-full text-xs font-mono bg-cyan-400 text-zinc-950 font-bold transition-all cursor-pointer';
+                    keyLight.color.setHex(0x22d3ee);
+                    rimLight.color.setHex(0x0284c7);
+                    particleMat.color.setHex(0x38bdf8);
+                } else if (mode === 'purple') {
+                    if (btnP) btnP.className = 'px-3 py-1 rounded-full text-xs font-mono bg-indigo-400 text-zinc-950 font-bold transition-all cursor-pointer';
+                    keyLight.color.setHex(0xa855f7);
+                    rimLight.color.setHex(0x6366f1);
+                    particleMat.color.setHex(0xc084fc);
+                } else {
+                    if (btnC) btnC.className = 'px-3 py-1 rounded-full text-xs font-mono bg-white text-zinc-950 font-bold transition-all cursor-pointer';
+                    keyLight.color.setHex(0xffffff);
+                    rimLight.color.setHex(0xa1a1aa);
+                    particleMat.color.setHex(0x94a3b8);
+                }
+            };
 
             // Mouse Physics
             let targetX = 0;
