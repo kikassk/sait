@@ -16,7 +16,7 @@ class OrbitaWebsiteTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('ОРБИТА');
-        $response->assertSee('НЕВЕСОМОСТИ');
+        $response->assertSee('ДВИГАЙСЯ');
         $response->assertSee('Балконная Галерея');
         $response->assertSee('ОРБИТАЛЬНОСТЬ');
     }
