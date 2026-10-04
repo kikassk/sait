@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ОРБИТА — Future Cyber Lounge & Cocktail Bar</title>
+    <title>ОРБИТА — Cyber Lounge & Molecular Mixology</title>
     <meta name="description" content="Ультрасовременное пространственное заведение с живой 3D-графикой, авторской миксологией и аудиовидео перформансами.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -82,9 +82,9 @@
             z-index: 10;
         }
 
-        /* Glassmorphism Ultra Styling */
+        /* Glassmorphism Styling */
         .glass-card {
-            background: rgba(10, 12, 24, 0.55);
+            background: rgba(10, 12, 24, 0.6);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -93,17 +93,130 @@
         }
         .glass-card:hover {
             border-color: rgba(6, 182, 212, 0.4);
-            box-shadow: 0 20px 50px rgba(6, 182, 212, 0.2);
+            box-shadow: 0 20px 50px rgba(6, 182, 212, 0.25);
             transform: translateY(-4px);
         }
 
         .glass-nav {
-            background: rgba(2, 2, 5, 0.7);
+            background: rgba(2, 2, 5, 0.75);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Neon Glow Utility */
+        /* Futuristic Custom Inputs */
+        .cyber-input-group {
+            position: relative;
+        }
+        .cyber-input {
+            width: 100%;
+            background: rgba(15, 20, 35, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 1rem;
+            padding: 1rem 1rem 1rem 3rem;
+            color: #ffffff;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .cyber-input:focus {
+            outline: none;
+            border-color: var(--color-neon-cyan);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 10px rgba(6, 182, 212, 0.1);
+            background: rgba(15, 20, 45, 0.9);
+        }
+        .cyber-input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            pointer-events: none;
+            transition: transform 0.3s ease;
+        }
+        .cyber-input-group:focus-within .cyber-input-icon {
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        /* Custom Guest Option Buttons */
+        .guest-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 0.75rem;
+            color: #94a3b8;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .guest-btn:hover, .guest-btn.active {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.2));
+            border-color: var(--color-neon-cyan);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+
+        /* Keyframe Animations */
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: floatAnim 6s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 15px rgba(6,182,212,0.4)); }
+            50% { opacity: 1; filter: drop-shadow(0 0 30px rgba(236,72,153,0.8)); }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(1000%); }
+        }
+        .cyber-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.8), transparent);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: 200%;
+            animation: marquee 20s linear infinite;
+        }
+
+        /* Equalizer Animation */
+        .equalizer-bar {
+            width: 3px;
+            background: var(--color-neon-cyan);
+            border-radius: 2px;
+            animation: eqBounce 1s ease-in-out infinite alternate;
+        }
+        .equalizer-bar:nth-child(1) { height: 12px; animation-delay: 0.1s; }
+        .equalizer-bar:nth-child(2) { height: 18px; animation-delay: 0.3s; }
+        .equalizer-bar:nth-child(3) { height: 8px;  animation-delay: 0.2s; }
+        .equalizer-bar:nth-child(4) { height: 15px; animation-delay: 0.4s; }
+
+        @keyframes eqBounce {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1.2); }
+        }
+
+        /* Glow Text Utility */
         .glow-cyan { text-shadow: 0 0 25px rgba(6, 182, 212, 0.75); }
         .glow-purple { text-shadow: 0 0 25px rgba(168, 85, 247, 0.75); }
         .glow-pink { text-shadow: 0 0 25px rgba(236, 72, 153, 0.75); }
@@ -170,8 +283,8 @@
                 </a>
 
                 <!-- Nav Links -->
-                <nav class="hidden lg:flex items-center gap-8 bg-black/50 border border-white/10 px-8 py-3 rounded-full shadow-2xl backdrop-blur-2xl">
-                    <a href="#concept" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-cyan-400 transition-colors flex items-center gap-1">Концепция</a>
+                <nav class="hidden lg:flex items-center gap-8 bg-black/60 border border-white/10 px-8 py-3 rounded-full shadow-2xl backdrop-blur-2xl">
+                    <a href="#concept" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-cyan-400 transition-colors">Концепция</a>
                     <a href="#zones" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-purple-400 transition-colors">Зоны</a>
                     <a href="#menu" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-pink-400 transition-colors">Миксология</a>
                     <a href="#events" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-cyan-400 transition-colors">Афиша</a>
@@ -181,9 +294,14 @@
 
                 <!-- Audio Switcher & Booking Action -->
                 <div class="flex items-center gap-4">
-                    <!-- Audio FX Toggle -->
-                    <button id="audio-toggle" onclick="toggleAudioSynth()" class="px-3.5 py-2 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold font-heading text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all flex items-center gap-2">
-                        <span id="audio-icon">🔇</span>
+                    <!-- Audio FX Toggle with Animated Equalizer -->
+                    <button id="audio-toggle" onclick="toggleAudioSynth()" class="px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold font-heading text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all flex items-center gap-2.5">
+                        <div id="equalizer-icon" class="flex items-center gap-1 opacity-50">
+                            <div class="equalizer-bar"></div>
+                            <div class="equalizer-bar"></div>
+                            <div class="equalizer-bar"></div>
+                            <div class="equalizer-bar"></div>
+                        </div>
                         <span id="audio-status" class="hidden sm:inline">SOUND: OFF</span>
                     </button>
 
@@ -200,7 +318,7 @@
         <section id="hero" class="relative min-h-screen flex items-center justify-center pt-28 pb-16 overflow-hidden">
             <div class="max-w-6xl mx-auto px-4 text-center relative z-10">
                 <!-- Status Badge -->
-                <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-cyan-500/30 backdrop-blur-2xl mb-8 shadow-2xl">
+                <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-cyan-500/30 backdrop-blur-2xl mb-8 shadow-2xl animate-float">
                     <span class="relative flex h-3 w-3">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-400"></span>
@@ -213,7 +331,7 @@
                 <!-- Main Title -->
                 <h1 class="text-4xl sm:text-7xl md:text-8xl lg:text-9xl font-black font-heading tracking-tight text-white mb-8 leading-[0.92]">
                     ПРОСТРАНСТВО <br/>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 glow-cyan">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 animate-pulse-glow">
                         НЕВЕСОМОСТИ
                     </span>
                 </h1>
@@ -234,9 +352,10 @@
                 </div>
 
                 <!-- Event Live Countdown Badge -->
-                <div class="mt-16 glass-card max-w-2xl mx-auto p-6 rounded-3xl border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+                <div class="mt-16 glass-card max-w-2xl mx-auto p-6 rounded-3xl border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-left relative overflow-hidden">
+                    <div class="cyber-scanline"></div>
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-2xl animate-pulse">
+                        <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-2xl animate-bounce">
                             🎧
                         </div>
                         <div>
@@ -244,32 +363,48 @@
                             <div class="text-sm font-bold text-white font-heading">CYBER SOUNDS: DJ ORBITAL</div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 font-heading font-black text-cyan-400 text-xl tracking-wider bg-black/40 px-5 py-2.5 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 font-heading font-black text-cyan-400 text-xl tracking-wider bg-black/50 px-5 py-2.5 rounded-2xl border border-white/10">
                         <span id="countdown-timer">02д 14ч 38м</span>
                     </div>
                 </div>
 
                 <!-- Key Metrics Grid -->
                 <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-5 max-w-4xl mx-auto">
-                    <div class="glass-card p-6 rounded-3xl text-center">
+                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
                         <div class="text-3xl sm:text-4xl font-black font-heading text-cyan-400 mb-1">4</div>
                         <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Атмосферных Зоны</div>
                     </div>
-                    <div class="glass-card p-6 rounded-3xl text-center">
+                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
                         <div class="text-3xl sm:text-4xl font-black font-heading text-purple-400 mb-1">25+</div>
                         <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Авторских Напитков</div>
                     </div>
-                    <div class="glass-card p-6 rounded-3xl text-center">
+                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
                         <div class="text-3xl sm:text-4xl font-black font-heading text-pink-400 mb-1">WebGL</div>
                         <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Interactive 3D Engine</div>
                     </div>
-                    <div class="glass-card p-6 rounded-3xl text-center">
+                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
                         <div class="text-3xl sm:text-4xl font-black font-heading text-indigo-400 mb-1">4.9 ★</div>
                         <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Отзывы Гостей</div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Continuous Cyber Ticker Marquee -->
+        <div class="w-full bg-black/80 border-y border-cyan-500/20 py-3 overflow-hidden backdrop-blur-xl">
+            <div class="animate-marquee whitespace-nowrap flex items-center gap-12 font-heading text-xs uppercase tracking-[0.3em] font-bold text-cyan-400/80">
+                <span>✦ MOLECULAR MIXOLOGY</span>
+                <span>✦ SPATIAL 3D SOUND</span>
+                <span>✦ NEON ATMOSPHERE</span>
+                <span>✦ VIP GAMING ZONES</span>
+                <span>✦ CYBER LOUNGE BAR</span>
+                <span>✦ MOLECULAR MIXOLOGY</span>
+                <span>✦ SPATIAL 3D SOUND</span>
+                <span>✦ NEON ATMOSPHERE</span>
+                <span>✦ VIP GAMING ZONES</span>
+                <span>✦ CYBER LOUNGE BAR</span>
+            </div>
+        </div>
 
         <!-- Concept & Interactive 3D Model Viewport -->
         <section id="concept" class="py-28 relative">
@@ -304,6 +439,7 @@
                     <!-- Interactive 3D Viewer Card -->
                     <div class="lg:col-span-6">
                         <div class="glass-card rounded-3xl p-8 relative overflow-hidden border border-cyan-500/30">
+                            <div class="cyber-scanline"></div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-2">
                                     <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></span>
@@ -314,7 +450,7 @@
 
                             <div class="aspect-square sm:aspect-video rounded-2xl relative bg-black/80 border border-white/10 overflow-hidden flex items-center justify-center">
                                 <div id="card-3d-viewport" class="w-full h-full cursor-grab"></div>
-                                <div class="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md px-4 py-2.5 rounded-xl text-[11px] text-slate-300 flex justify-between items-center border border-white/10 pointer-events-none">
+                                <div class="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-md px-4 py-2.5 rounded-xl text-[11px] text-slate-300 flex justify-between items-center border border-white/10 pointer-events-none">
                                     <span class="flex items-center gap-2">
                                         <span class="text-cyan-400">🖱️</span> Вращайте 3D-модель
                                     </span>
@@ -340,7 +476,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($zones as $zone)
-                        <div class="glass-card rounded-3xl p-7 flex flex-col justify-between hover:border-cyan-500/50 group">
+                        <div class="glass-card rounded-3xl p-7 flex flex-col justify-between hover:border-cyan-500/50 group relative overflow-hidden">
                             <div>
                                 <div class="flex justify-between items-center mb-6">
                                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500/30 to-purple-600/30 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-bold font-heading text-lg group-hover:scale-110 transition-transform">
@@ -393,7 +529,7 @@
                 <!-- Cocktail Menu Grid -->
                 <div id="menu-bar" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     @foreach($menu['bar'] as $item)
-                        <div class="glass-card p-6 rounded-3xl hover:border-cyan-500/60 transition-all flex justify-between items-start group">
+                        <div class="glass-card p-6 rounded-3xl hover:border-cyan-500/60 transition-all flex justify-between items-start group relative overflow-hidden">
                             <div>
                                 <div class="flex items-center gap-2 mb-2">
                                     <h4 class="font-heading font-bold text-white text-base group-hover:text-cyan-400 transition-colors">{{ $item['name'] }}</h4>
@@ -413,7 +549,7 @@
                 <!-- Kitchen Menu Grid -->
                 <div id="menu-kitchen" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
                     @foreach($menu['kitchen'] as $item)
-                        <div class="glass-card p-6 rounded-3xl hover:border-purple-500/60 transition-all flex justify-between items-start group">
+                        <div class="glass-card p-6 rounded-3xl hover:border-purple-500/60 transition-all flex justify-between items-start group relative overflow-hidden">
                             <div>
                                 <h4 class="font-heading font-bold text-white text-base mb-2 group-hover:text-purple-400 transition-colors">{{ $item['name'] }}</h4>
                                 <p class="text-slate-400 text-xs mb-4 font-light leading-relaxed">{{ $item['desc'] }}</p>
@@ -442,7 +578,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     @foreach($events as $event)
-                        <div class="glass-card rounded-3xl p-7 flex flex-col justify-between hover:border-pink-500/50 transition-all duration-300 group">
+                        <div class="glass-card rounded-3xl p-7 flex flex-col justify-between hover:border-pink-500/50 transition-all duration-300 group relative overflow-hidden">
                             <div>
                                 <div class="flex items-center justify-between mb-4">
                                     <span class="text-xs font-bold font-heading text-pink-400 bg-pink-500/10 px-3 py-1 rounded-full border border-pink-500/20">{{ $event['date'] }}</span>
@@ -580,56 +716,69 @@
 
     </div>
 
-    <!-- Booking Modal -->
-    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-2xl hidden opacity-0 transition-all duration-300">
-        <div class="bg-[#0b0c16] border border-cyan-500/40 rounded-3xl p-6 sm:p-10 max-w-lg w-full relative shadow-2xl">
-            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white font-bold text-2xl">&times;</button>
-            <h3 class="font-heading font-bold text-2xl text-white mb-2">БРОНИРОВАНИЕ СТОЛА</h3>
-            <p id="modal-subtitle" class="text-xs text-slate-400 mb-6">Выберите параметры вашего посещения</p>
+    <!-- HIGH-END CYBERPUNK BOOKING MODAL -->
+    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl hidden opacity-0 transition-all duration-300">
+        <div class="bg-[#090b14] border border-cyan-500/40 rounded-3xl p-6 sm:p-10 max-w-lg w-full relative shadow-[0_0_80px_rgba(6,182,212,0.25)] overflow-hidden">
+            <div class="cyber-scanline"></div>
 
-            <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-4">
+            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white font-bold text-2xl w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors hover:border-cyan-400">&times;</button>
+
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></span>
+                <span class="text-xs uppercase font-bold tracking-widest text-cyan-400 font-heading">ОНЛАЙН-РЕЗЕРВ СТОЛА</span>
+            </div>
+
+            <h3 class="font-heading font-black text-2xl sm:text-3xl text-white mb-2">БРОНИРОВАНИЕ</h3>
+            <p id="modal-subtitle" class="text-xs text-slate-400 mb-8 font-light">Локация: Главная сцена</p>
+
+            <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-5">
                 <input type="hidden" id="booking-zone" name="zone" value="Главная сцена">
+                <input type="hidden" id="booking-guests" name="guests" value="2">
 
-                <div>
-                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Ваше имя</label>
-                    <input type="text" name="name" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors" placeholder="Александр">
+                <!-- Cyber Input: Name -->
+                <div class="cyber-input-group">
+                    <span class="cyber-input-icon">👤</span>
+                    <input type="text" name="name" required class="cyber-input" placeholder="Ваше полное имя">
                 </div>
 
-                <div>
-                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Телефон</label>
-                    <input type="tel" name="phone" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors" placeholder="+7 (999) 000-00-00">
+                <!-- Cyber Input: Phone -->
+                <div class="cyber-input-group">
+                    <span class="cyber-input-icon">📱</span>
+                    <input type="tel" name="phone" required class="cyber-input" placeholder="+7 (999) 000-00-00">
                 </div>
 
+                <!-- Cyber Inputs: Date & Time -->
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Дата</label>
-                        <input type="date" name="date" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors">
+                    <div class="cyber-input-group">
+                        <span class="cyber-input-icon">📅</span>
+                        <input type="date" name="date" required class="cyber-input text-slate-200">
                     </div>
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Время</label>
-                        <input type="time" name="time" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors">
+                    <div class="cyber-input-group">
+                        <span class="cyber-input-icon">⏰</span>
+                        <input type="time" name="time" required class="cyber-input text-slate-200">
                     </div>
                 </div>
 
+                <!-- Non-Basic Custom Guest Selector Pills -->
                 <div>
-                    <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Количество гостей</label>
-                    <select name="guests" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors">
-                        <option value="1" class="bg-slate-900">1 человек</option>
-                        <option value="2" selected class="bg-slate-900">2 человека</option>
-                        <option value="4" class="bg-slate-900">4 человека</option>
-                        <option value="6" class="bg-slate-900">6+ человек</option>
-                    </select>
+                    <label class="block text-[11px] uppercase font-bold tracking-wider text-slate-300 mb-2 font-heading">Количество гостей</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="selectGuests(1, this)" class="guest-btn">1 гость</button>
+                        <button type="button" onclick="selectGuests(2, this)" class="guest-btn active">2 гостя</button>
+                        <button type="button" onclick="selectGuests(4, this)" class="guest-btn">4 гостя</button>
+                        <button type="button" onclick="selectGuests(6, this)" class="guest-btn">6+ гостей</button>
+                    </div>
                 </div>
 
-                <button type="submit" class="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white font-heading font-bold text-xs uppercase tracking-widest shadow-xl hover:scale-[1.02] transition-transform">
-                    Подтвердить бронирование
+                <button type="submit" class="w-full py-4 mt-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white font-heading font-black text-xs uppercase tracking-widest shadow-xl shadow-cyan-500/30 hover:shadow-cyan-500/60 hover:scale-[1.02] transition-all duration-300">
+                    ПОДТВЕРДИТЬ БРОНИРОВАНИЕ
                 </button>
             </form>
 
             <div id="booking-success" class="hidden text-center py-8">
-                <div class="w-16 h-16 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">✓</div>
-                <h4 class="font-heading font-bold text-xl text-white mb-2">БРОНЬ ПОДТВЕРЖДЕНА!</h4>
-                <p class="text-slate-300 text-xs">Мы свяжемся с вами в течение 10 минут для подтверждения деталей.</p>
+                <div class="w-20 h-20 bg-cyan-500/20 border border-cyan-400 text-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-3xl animate-bounce shadow-lg shadow-cyan-500/30">✓</div>
+                <h4 class="font-heading font-bold text-2xl text-white mb-2">БРОНЬ ПОДТВЕРЖДЕНА!</h4>
+                <p class="text-slate-300 text-xs max-w-xs mx-auto leading-relaxed">Система зафиксировала ваш визит. Менеджер свяжется с вами для подтверждения.</p>
             </div>
         </div>
     </div>
@@ -647,7 +796,7 @@
             cursorDot.style.top = e.clientY + 'px';
         });
 
-        document.querySelectorAll('a, button, input, select').forEach(elem => {
+        document.querySelectorAll('a, button, input, select, .guest-btn').forEach(elem => {
             elem.addEventListener('mouseenter', () => {
                 cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
                 cursor.style.borderColor = '#ec4899';
@@ -671,6 +820,8 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
 
+            const eqIcon = document.getElementById('equalizer-icon');
+
             if (!isAudioOn) {
                 // Play ambient drone
                 ambientOsc = audioCtx.createOscillator();
@@ -683,12 +834,12 @@
                 ambientOsc.start();
 
                 isAudioOn = true;
-                document.getElementById('audio-icon').innerText = '🔊';
+                eqIcon.style.opacity = '1';
                 document.getElementById('audio-status').innerText = 'SOUND: ON';
             } else {
                 if (ambientOsc) ambientOsc.stop();
                 isAudioOn = false;
-                document.getElementById('audio-icon').innerText = '🔇';
+                eqIcon.style.opacity = '0.4';
                 document.getElementById('audio-status').innerText = 'SOUND: OFF';
             }
         }
@@ -957,7 +1108,15 @@
         }
 
 
-        // --- 6. TABS & MODAL LOGIC ---
+        // --- 6. GUEST SELECTOR PILLS LOGIC ---
+        function selectGuests(count, btn) {
+            document.getElementById('booking-guests').value = count;
+            document.querySelectorAll('.guest-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+
+        // --- 7. TABS & MODAL LOGIC ---
         function switchMenu(type) {
             const barMenu = document.getElementById('menu-bar');
             const kitchenMenu = document.getElementById('menu-kitchen');
