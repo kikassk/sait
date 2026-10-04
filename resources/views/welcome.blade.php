@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth dark">
+<html lang="ru" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ОРБИТА — Cyber Lounge & Molecular Mixology</title>
-    <meta name="description" content="Ультрасовременное пространственное заведение с живой 3D-графикой, авторской миксологией и аудиовидео перформансами.">
+    <title>ОРБИТА — Творческий кластер & Бар-трансформер от Вани Дмитриенко</title>
+    <meta name="description" content="Исторический особняк на Яузской 1/15. Днем — фэнси-бар и творческое пространство, ночью — актуальный звук и авторская миксология.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;700;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
 
     <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -19,55 +19,27 @@
 
     <style>
         :root {
-            --color-neon-cyan: #06b6d4;
-            --color-neon-purple: #a855f7;
-            --color-neon-pink: #ec4899;
-            --color-cyber-dark: #020205;
+            --bg-dark: #07080c;
+            --accent-gold: #e2b874;
+            --accent-lunar: #d4e0eb;
+            --glow-moon: rgba(226, 184, 116, 0.25);
+            --mode-glow: #e2b874;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--color-cyber-dark);
+            background-color: var(--bg-dark);
             color: #f1f5f9;
             overflow-x: hidden;
-            cursor: default;
+            transition: background-color 0.8s ease;
         }
 
-        h1, h2, h3, h4, .font-heading {
+        .font-heading {
             font-family: 'Unbounded', sans-serif;
         }
 
-        /* Custom Cyber Cursor */
-        #cyber-cursor {
-            pointer-events: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--color-neon-cyan);
-            border-radius: 50%;
-            z-index: 9999;
-            transition: transform 0.1s ease-out, border-color 0.2s, background-color 0.2s;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
-        }
-        #cyber-cursor-dot {
-            pointer-events: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 6px;
-            background: #fff;
-            border-radius: 50%;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px #fff;
-        }
-
-        /* Background 3D Canvas */
-        #canvas-container {
+        /* 3D WebGL Canvas Background */
+        #moon-canvas-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -82,900 +54,818 @@
             z-index: 10;
         }
 
-        /* Glassmorphism Styling */
-        .glass-card {
-            background: rgba(10, 12, 24, 0.6);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+        /* Sleek Glassmorphism */
+        .orbita-glass {
+            background: rgba(15, 17, 26, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .glass-card:hover {
-            border-color: rgba(6, 182, 212, 0.4);
-            box-shadow: 0 20px 50px rgba(6, 182, 212, 0.25);
-            transform: translateY(-4px);
+        .orbita-glass:hover {
+            border-color: rgba(226, 184, 116, 0.35);
+            box-shadow: 0 25px 60px rgba(226, 184, 116, 0.12);
+            transform: translateY(-3px);
         }
 
-        .glass-nav {
-            background: rgba(2, 2, 5, 0.75);
-            backdrop-filter: blur(20px);
+        .orbita-nav {
+            background: rgba(7, 8, 12, 0.85);
+            backdrop-filter: blur(24px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Futuristic Custom Inputs */
-        .cyber-input-group {
-            position: relative;
+        /* Day / Night Theme Transitions */
+        body.theme-day {
+            --bg-dark: #0f121a;
+            --accent-gold: #f59e0b;
+            --accent-lunar: #fbbf24;
+            --glow-moon: rgba(245, 158, 11, 0.3);
         }
-        .cyber-input {
-            width: 100%;
-            background: rgba(15, 20, 35, 0.7);
+        body.theme-day .orbita-glass {
+            background: rgba(25, 30, 45, 0.7);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        /* Interactive Map Table Buttons */
+        .map-table-btn {
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 1rem;
-            padding: 1rem 1rem 1rem 3rem;
-            color: #ffffff;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .cyber-input:focus {
-            outline: none;
-            border-color: var(--color-neon-cyan);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 10px rgba(6, 182, 212, 0.1);
-            background: rgba(15, 20, 45, 0.9);
-        }
-        .cyber-input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.1rem;
-            pointer-events: none;
-            transition: transform 0.3s ease;
-        }
-        .cyber-input-group:focus-within .cyber-input-icon {
-            transform: translateY(-50%) scale(1.2);
+        .map-table-btn:hover {
+            background: rgba(226, 184, 116, 0.2);
+            border-color: var(--accent-gold);
+            transform: scale(1.06);
+            box-shadow: 0 0 20px rgba(226, 184, 116, 0.4);
         }
 
         /* Custom Guest Option Buttons */
-        .guest-btn {
+        .guest-pill {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             color: #94a3b8;
-            font-family: 'Unbounded', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 700;
             transition: all 0.25s ease;
-            cursor: pointer;
         }
-        .guest-btn:hover, .guest-btn.active {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.2));
-            border-color: var(--color-neon-cyan);
+        .guest-pill.active, .guest-pill:hover {
+            background: linear-gradient(135deg, rgba(226, 184, 116, 0.3), rgba(212, 224, 235, 0.2));
+            border-color: var(--accent-gold);
             color: #ffffff;
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 15px rgba(226, 184, 116, 0.3);
         }
 
         /* Keyframe Animations */
-        @keyframes floatAnim {
+        @keyframes floatLunar {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(1deg); }
+            50% { transform: translateY(-12px) rotate(1.5deg); }
         }
-        .animate-float {
-            animation: floatAnim 6s ease-in-out infinite;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 15px rgba(6,182,212,0.4)); }
-            50% { opacity: 1; filter: drop-shadow(0 0 30px rgba(236,72,153,0.8)); }
-        }
-        .animate-pulse-glow {
-            animation: pulseGlow 4s ease-in-out infinite;
+        .animate-lunar-float {
+            animation: floatLunar 7s ease-in-out infinite;
         }
 
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(1000%); }
+        @keyframes moonGlowPulse {
+            0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 25px rgba(226, 184, 116, 0.3)); }
+            50% { opacity: 1; filter: drop-shadow(0 0 50px rgba(226, 184, 116, 0.6)); }
         }
-        .cyber-scanline {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.8), transparent);
-            animation: scanline 8s linear infinite;
-            pointer-events: none;
+        .animate-moon-glow {
+            animation: moonGlowPulse 5s ease-in-out infinite;
         }
 
-        @keyframes marquee {
+        @keyframes marqueeScroll {
             0% { transform: translateX(0%); }
             100% { transform: translateX(-50%); }
         }
         .animate-marquee {
             display: flex;
             width: 200%;
-            animation: marquee 20s linear infinite;
+            animation: marqueeScroll 25s linear infinite;
         }
 
-        /* Equalizer Animation */
-        .equalizer-bar {
-            width: 3px;
-            background: var(--color-neon-cyan);
-            border-radius: 2px;
-            animation: eqBounce 1s ease-in-out infinite alternate;
-        }
-        .equalizer-bar:nth-child(1) { height: 12px; animation-delay: 0.1s; }
-        .equalizer-bar:nth-child(2) { height: 18px; animation-delay: 0.3s; }
-        .equalizer-bar:nth-child(3) { height: 8px;  animation-delay: 0.2s; }
-        .equalizer-bar:nth-child(4) { height: 15px; animation-delay: 0.4s; }
-
-        @keyframes eqBounce {
-            0% { transform: scaleY(0.3); }
-            100% { transform: scaleY(1.2); }
-        }
-
-        /* Glow Text Utility */
-        .glow-cyan { text-shadow: 0 0 25px rgba(6, 182, 212, 0.75); }
-        .glow-purple { text-shadow: 0 0 25px rgba(168, 85, 247, 0.75); }
-        .glow-pink { text-shadow: 0 0 25px rgba(236, 72, 153, 0.75); }
-
-        .border-glow-cyan:hover {
-            box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
-        }
-
-        /* Hologram Grid Accent */
-        .holo-grid {
-            background-size: 40px 40px;
-            background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        /* Gold Gradient Text */
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #fef08a 0%, #e2b874 50%, #b4833e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 7px;
         }
         ::-webkit-scrollbar-track {
-            background: #020205;
+            background: #07080c;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1e1b4b;
+            background: #2a2e3d;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #a855f7;
+            background: #e2b874;
         }
     </style>
 </head>
-<body class="bg-[#020205] text-slate-100 antialiased selection:bg-cyan-500 selection:text-black holo-grid">
+<body class="bg-[#07080c] text-slate-100 antialiased selection:bg-amber-500 selection:text-black">
 
-    <!-- Custom Cursor Elements -->
-    <div id="cyber-cursor"></div>
-    <div id="cyber-cursor-dot"></div>
-
-    <!-- 3D WebGL Canvas Background -->
-    <div id="canvas-container"></div>
+    <!-- 3D WebGL Canvas Container for Interactive Moon & Celestial Atmosphere -->
+    <div id="moon-canvas-container"></div>
 
     <div class="content-layer">
 
-        <!-- Navigation Bar -->
-        <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <!-- Header / Navigation Bar -->
+        <header class="fixed top-0 left-0 right-0 z-50 orbita-nav transition-all duration-300" id="navbar">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                <!-- Brand Logo -->
+                <!-- Brand Logo & Location -->
                 <a href="#hero" class="flex items-center gap-3.5 group">
-                    <div class="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-purple-600 to-pink-500 p-[2px] shadow-lg shadow-cyan-500/20 group-hover:shadow-pink-500/40 transition-all duration-300 group-hover:scale-105">
-                        <div class="w-full h-full bg-[#020205] rounded-[14px] flex items-center justify-center relative overflow-hidden">
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-black text-2xl font-heading">О</span>
-                            <div class="absolute inset-0 bg-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 p-[1.5px] shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                        <div class="w-full h-full bg-[#07080c] rounded-[14px] flex items-center justify-center">
+                            <span class="text-amber-300 font-heading font-black text-2xl tracking-tighter">О</span>
                         </div>
                     </div>
                     <div>
-                        <span class="text-xl font-black font-heading tracking-widest text-white group-hover:text-cyan-400 transition-colors">
+                        <div class="text-xl font-black font-heading tracking-[0.2em] text-white group-hover:text-amber-300 transition-colors">
                             ОРБИТА
-                        </span>
-                        <div class="text-[9px] uppercase tracking-[0.25em] text-cyan-400 font-bold flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                            Cyber Lounge Bar
+                        </div>
+                        <div class="text-[9px] uppercase tracking-[0.2em] text-amber-400/90 font-medium flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                            Яузская 1/15 • Москва
                         </div>
                     </div>
                 </a>
 
-                <!-- Nav Links -->
-                <nav class="hidden lg:flex items-center gap-8 bg-black/60 border border-white/10 px-8 py-3 rounded-full shadow-2xl backdrop-blur-2xl">
-                    <a href="#concept" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-cyan-400 transition-colors">Концепция</a>
-                    <a href="#zones" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-purple-400 transition-colors">Зоны</a>
-                    <a href="#menu" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-pink-400 transition-colors">Миксология</a>
-                    <a href="#events" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-cyan-400 transition-colors">Афиша</a>
-                    <a href="#loyalty" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-purple-400 transition-colors">Лояльность</a>
-                    <a href="#contacts" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-indigo-400 transition-colors">Контакты</a>
+                <!-- Navigation Links -->
+                <nav class="hidden md:flex items-center gap-8 bg-black/40 border border-white/10 px-8 py-3 rounded-full shadow-2xl backdrop-blur-2xl">
+                    <a href="#about" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-amber-300 transition-colors">О концепции</a>
+                    <a href="#seating" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-amber-300 transition-colors">План рассадки</a>
+                    <a href="#menu" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-amber-300 transition-colors">Меню</a>
+                    <a href="#loyalty" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-amber-300 transition-colors">Орбитальность</a>
+                    <a href="#team" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-amber-300 transition-colors">Команда</a>
+                    <a href="#contacts" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-amber-300 transition-colors">Контакты</a>
                 </nav>
 
-                <!-- Audio Switcher & Booking Action -->
+                <!-- Day/Night Mode Switcher & Booking CTA -->
                 <div class="flex items-center gap-4">
-                    <!-- Audio FX Toggle with Animated Equalizer -->
-                    <button id="audio-toggle" onclick="toggleAudioSynth()" class="px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold font-heading text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all flex items-center gap-2.5">
-                        <div id="equalizer-icon" class="flex items-center gap-1 opacity-50">
-                            <div class="equalizer-bar"></div>
-                            <div class="equalizer-bar"></div>
-                            <div class="equalizer-bar"></div>
-                            <div class="equalizer-bar"></div>
-                        </div>
-                        <span id="audio-status" class="hidden sm:inline">SOUND: OFF</span>
+                    <!-- Day / Night Toggle -->
+                    <button id="mode-toggle-btn" onclick="toggleDayNightMode()" class="px-4 py-2.5 rounded-full bg-white/5 border border-white/15 text-[11px] font-heading font-bold text-amber-300 hover:bg-amber-500/10 transition-all flex items-center gap-2">
+                        <span id="mode-icon">🌙</span>
+                        <span id="mode-label" class="hidden sm:inline">РЕЖИМ: НОЧЬ</span>
                     </button>
 
-                    <button onclick="openBookingModal('Главная сцена')" class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-xs font-bold font-heading rounded-full group bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105">
-                        <span class="relative px-6 py-2.5 transition-all ease-in duration-75 bg-[#020205] rounded-full group-hover:bg-opacity-0 uppercase tracking-wider">
-                            Забронировать
-                        </span>
+                    <!-- Reserve Button -->
+                    <button onclick="openBookingModal('Главная зона')" class="relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden text-xs font-bold font-heading rounded-full bg-gradient-to-r from-amber-300 via-amber-500 to-amber-600 text-black shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-105 transition-all duration-300">
+                        <span class="uppercase tracking-widest font-black">Забронировать</span>
                     </button>
                 </div>
             </div>
         </header>
 
         <!-- Hero Section -->
-        <section id="hero" class="relative min-h-screen flex items-center justify-center pt-28 pb-16 overflow-hidden">
+        <section id="hero" class="relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden">
             <div class="max-w-6xl mx-auto px-4 text-center relative z-10">
-                <!-- Status Badge -->
-                <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-cyan-500/30 backdrop-blur-2xl mb-8 shadow-2xl animate-float">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-400"></span>
-                    </span>
-                    <span class="text-xs font-bold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-300 to-pink-400 font-heading">
-                        УЛЬТРАСОВРЕМЕННЫЙ 3D КИБЕР-ЛАУНЖ
+
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-amber-500/30 backdrop-blur-2xl mb-8 shadow-2xl animate-lunar-float">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                    <span class="text-xs font-bold uppercase tracking-[0.25em] text-amber-300 font-heading">
+                        ИСТОРИЧЕСКИЙ ОСОБНЯК • БАР ОТ ВАНИ ДМИТРИЕНКО
                     </span>
                 </div>
 
-                <!-- Main Title -->
-                <h1 class="text-4xl sm:text-7xl md:text-8xl lg:text-9xl font-black font-heading tracking-tight text-white mb-8 leading-[0.92]">
-                    ПРОСТРАНСТВО <br/>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 animate-pulse-glow">
-                        НЕВЕСОМОСТИ
+                <!-- Main Dynamic Title -->
+                <h1 class="text-4xl sm:text-7xl md:text-8xl lg:text-9xl font-black font-heading tracking-tight text-white mb-8 leading-[0.95]">
+                    ДВИГАЙСЯ <br/>
+                    <span class="text-gold-gradient animate-moon-glow">
+                        ВМЕСТЕ С ОРБИТОЙ
                     </span>
                 </h1>
 
-                <!-- Subtitle -->
-                <p class="text-base sm:text-2xl text-slate-300 max-w-3xl mx-auto mb-10 font-light leading-relaxed">
-                    Авторская молекулярная миксология, объемный 3D-звук и реактивные голографические инсталляции в самом центре столицы.
-                </p>
+                <!-- Dual Day/Night Atmosphere Subtitle -->
+                <div class="max-w-3xl mx-auto mb-12 grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    <div class="orbita-glass p-6 rounded-3xl border-l-4 border-l-amber-400">
+                        <div class="text-xs font-heading font-bold uppercase tracking-wider text-amber-400 mb-2">☀️ ДНЕМ МЫ</div>
+                        <p class="text-sm text-slate-300 leading-relaxed font-light">Фэнси-бар с яркой авторской кухней, коворкингом и творческими встречами.</p>
+                    </div>
+                    <div class="orbita-glass p-6 rounded-3xl border-l-4 border-l-amber-200">
+                        <div class="text-xs font-heading font-bold uppercase tracking-wider text-amber-200 mb-2">🌙 НОЧЬЮ МЫ</div>
+                        <p class="text-sm text-slate-300 leading-relaxed font-light">Пространство с актуальным звуком, сетами любимых артистов и авторскими коктейлями.</p>
+                    </div>
+                </div>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
-                    <button onclick="openBookingModal('Главная сцена')" class="w-full sm:w-auto px-10 py-4.5 rounded-full bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white font-heading text-xs tracking-widest uppercase font-bold shadow-2xl shadow-cyan-500/40 hover:scale-105 hover:shadow-cyan-500/60 transition-all duration-300">
-                        Забронировать визит
+                    <button onclick="openBookingModal('Главная сцена')" class="w-full sm:w-auto px-10 py-4.5 rounded-full bg-gradient-to-r from-amber-300 via-amber-500 to-amber-600 text-black font-heading text-xs tracking-widest uppercase font-black shadow-2xl shadow-amber-500/30 hover:scale-105 transition-all duration-300">
+                        ЗАБРОНИРОВАТЬ СТОЛ
                     </button>
-                    <a href="#menu" class="w-full sm:w-auto px-10 py-4.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-2xl text-slate-200 font-heading text-xs tracking-widest uppercase font-bold transition-all duration-300 border-glow-cyan">
-                        Карта коктейлей
+                    <a href="#seating" class="w-full sm:w-auto px-10 py-4.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 backdrop-blur-2xl text-slate-200 font-heading text-xs tracking-widest uppercase font-bold transition-all duration-300">
+                        ПЛАН РАССАДКИ
                     </a>
                 </div>
 
-                <!-- Event Live Countdown Badge -->
-                <div class="mt-16 glass-card max-w-2xl mx-auto p-6 rounded-3xl border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-left relative overflow-hidden">
-                    <div class="cyber-scanline"></div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-2xl animate-bounce">
-                            🎧
-                        </div>
-                        <div>
-                            <div class="text-[10px] uppercase font-bold tracking-widest text-purple-400 font-heading">БЛИЖАЙШИЙ DJ-СЕТ</div>
-                            <div class="text-sm font-bold text-white font-heading">CYBER SOUNDS: DJ ORBITAL</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 font-heading font-black text-cyan-400 text-xl tracking-wider bg-black/50 px-5 py-2.5 rounded-2xl border border-white/10">
-                        <span id="countdown-timer">02д 14ч 38м</span>
-                    </div>
-                </div>
-
-                <!-- Key Metrics Grid -->
-                <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-5 max-w-4xl mx-auto">
-                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
-                        <div class="text-3xl sm:text-4xl font-black font-heading text-cyan-400 mb-1">4</div>
-                        <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Атмосферных Зоны</div>
-                    </div>
-                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
-                        <div class="text-3xl sm:text-4xl font-black font-heading text-purple-400 mb-1">25+</div>
-                        <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Авторских Напитков</div>
-                    </div>
-                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
-                        <div class="text-3xl sm:text-4xl font-black font-heading text-pink-400 mb-1">WebGL</div>
-                        <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Interactive 3D Engine</div>
-                    </div>
-                    <div class="glass-card p-6 rounded-3xl text-center hover:scale-105 transition-transform">
-                        <div class="text-3xl sm:text-4xl font-black font-heading text-indigo-400 mb-1">4.9 ★</div>
-                        <div class="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Отзывы Гостей</div>
-                    </div>
+                <!-- Info Location Strip -->
+                <div class="mt-16 inline-flex flex-wrap items-center justify-center gap-6 px-8 py-4 rounded-full bg-black/60 border border-white/10 text-xs text-slate-300 backdrop-blur-xl">
+                    <span class="flex items-center gap-2">📍 Москва, ул. Яузская 1/15</span>
+                    <span class="hidden sm:inline text-slate-600">•</span>
+                    <span class="flex items-center gap-2">🚇 метро Китай-город / Таганская</span>
+                    <span class="hidden sm:inline text-slate-600">•</span>
+                    <span class="text-amber-300 font-semibold">Вс–Чт: 12:00–00:00 | Пт–Сб: 12:00–03:00</span>
                 </div>
             </div>
         </section>
 
-        <!-- Continuous Cyber Ticker Marquee -->
-        <div class="w-full bg-black/80 border-y border-cyan-500/20 py-3 overflow-hidden backdrop-blur-xl">
-            <div class="animate-marquee whitespace-nowrap flex items-center gap-12 font-heading text-xs uppercase tracking-[0.3em] font-bold text-cyan-400/80">
-                <span>✦ MOLECULAR MIXOLOGY</span>
-                <span>✦ SPATIAL 3D SOUND</span>
-                <span>✦ NEON ATMOSPHERE</span>
-                <span>✦ VIP GAMING ZONES</span>
-                <span>✦ CYBER LOUNGE BAR</span>
-                <span>✦ MOLECULAR MIXOLOGY</span>
-                <span>✦ SPATIAL 3D SOUND</span>
-                <span>✦ NEON ATMOSPHERE</span>
-                <span>✦ VIP GAMING ZONES</span>
-                <span>✦ CYBER LOUNGE BAR</span>
+        <!-- Continuous Orbit Ticker Marquee -->
+        <div class="w-full bg-black/90 border-y border-amber-500/20 py-3.5 overflow-hidden backdrop-blur-xl">
+            <div class="animate-marquee whitespace-nowrap flex items-center gap-12 font-heading text-xs uppercase tracking-[0.3em] font-bold text-amber-300/80">
+                <span>✦ ОРБИТА — ТВОРЧЕСКИЙ КЛАСТЕР</span>
+                <span>✦ АВТОРСКАЯ КУХНЯ ВАНА ДМИТРИЕНКО</span>
+                <span>✦ АКТУАЛЬНЫЙ ЗВУК И ЖИВЫЕ ДЖЕМЫ</span>
+                <span>✦ ИСТОРИЧЕСКИЙ ОСОБНЯК НА ЯУЗСКОЙ</span>
+                <span>✦ ОРБИТА — ТВОРЧЕСКИЙ КЛАСТЕР</span>
+                <span>✦ АВТОРСКАЯ КУХНЯ ВАНА ДМИТРИЕНКО</span>
+                <span>✦ АКТУАЛЬНЫЙ ЗВУК И ЖИВЫЕ ДЖЕМЫ</span>
+                <span>✦ ИСТОРИЧЕСКИЙ ОСОБНЯК НА ЯУЗСКОЙ</span>
             </div>
         </div>
 
-        <!-- Concept & Interactive 3D Model Viewport -->
-        <section id="concept" class="py-28 relative">
+        <!-- About / Concept Section -->
+        <section id="about" class="py-28 relative">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                    <div class="lg:col-span-6">
-                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs uppercase tracking-widest font-bold mb-6">
-                            ФИЛОСОФИЯ «ОРБИТЫ»
+
+                    <!-- Left Column Text -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs uppercase tracking-widest font-bold">
+                            О КОНЦЕПЦИИ
                         </div>
-                        <h2 class="text-3xl sm:text-5xl font-black font-heading text-white mb-6 leading-tight">
-                            СИМБИОЗ ТЕХНОЛОГИЙ И <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500">ГАСТРОНОМИИ</span>
+
+                        <h2 class="text-3xl sm:text-5xl font-black font-heading text-white leading-tight">
+                            ООРБИТА — БАР, ГДЕ <span class="text-gold-gradient">ЗВЕЗДЫ ТУСУЮТСЯ</span> НЕ НА НЕБЕ, А ЗА СОСЕДНИМ СТОЛИКОМ
                         </h2>
-                        <p class="text-slate-300 text-base sm:text-lg mb-6 leading-relaxed font-light">
-                            «Орбита» — это больше чем бар. Это интерактивный артефакт будущего, где вкус коктейлей синхронизируется с динамической световой и звуковой волной.
-                        </p>
-                        <p class="text-slate-400 text-sm mb-8 leading-relaxed">
-                            Каждый коктейль подается с использованием элементов сухой заморозки, пищевых неоновых фракций и натуральных аромаэссенций.
+
+                        <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-light">
+                            «Встретимся на Орбите! Здесь тебя будут ждать авторские бар и кухня, креативные классы, квартирники, джемы с молодыми артистами и музыкантами, уютные концерты и, конечно же, я.»
                         </p>
 
-                        <div class="grid grid-cols-2 gap-6 border-t border-white/10 pt-8">
-                            <div class="glass-card p-5 rounded-2xl">
-                                <div class="text-cyan-400 font-heading font-bold text-base mb-1">Spatial Audio</div>
-                                <div class="text-xs text-slate-400">Звуковые сферы над каждым столом</div>
+                        <div class="p-6 rounded-3xl bg-amber-500/5 border border-amber-500/20">
+                            <div class="text-xs uppercase font-bold text-amber-400 font-heading mb-1">— Ваня Дмитриенко</div>
+                            <p class="text-xs text-slate-400 italic">«Я давно мечтал о пространстве, в котором смогу делиться тем, что мне важно. Место, куда можно приехать за свежими идеями, поработать, послушать музыку или просто круто провести время.»</p>
+                        </div>
+
+                        <!-- 3 Highlights -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+                            <div class="orbita-glass p-5 rounded-2xl">
+                                <div class="text-amber-300 font-heading font-black text-2xl mb-1">01</div>
+                                <div class="text-xs font-bold text-white mb-1">Творческий кластер</div>
+                                <div class="text-[11px] text-slate-400">Летние маркеты & арт-события</div>
                             </div>
-                            <div class="glass-card p-5 rounded-2xl">
-                                <div class="text-pink-400 font-heading font-bold text-base mb-1">Cyber-Visual Art</div>
-                                <div class="text-xs text-slate-400">3D проекции и реакции на звук</div>
+                            <div class="orbita-glass p-5 rounded-2xl">
+                                <div class="text-amber-300 font-heading font-black text-2xl mb-1">02</div>
+                                <div class="text-xs font-bold text-white mb-1">Бар-трансформер</div>
+                                <div class="text-[11px] text-slate-400">Из уютного коворкинга в ночной клуб</div>
+                            </div>
+                            <div class="orbita-glass p-5 rounded-2xl">
+                                <div class="text-amber-300 font-heading font-black text-2xl mb-1">03</div>
+                                <div class="text-xs font-bold text-white mb-1">Авторская кухня</div>
+                                <div class="text-[11px] text-slate-400">Smart casual гастрономия</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Interactive 3D Viewer Card -->
-                    <div class="lg:col-span-6">
-                        <div class="glass-card rounded-3xl p-8 relative overflow-hidden border border-cyan-500/30">
-                            <div class="cyber-scanline"></div>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></span>
-                                    <span class="text-xs font-heading font-bold uppercase tracking-wider text-cyan-300">3D АРТЕФАКТ ОРБИТЫ</span>
-                                </div>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-widest">Интерактивный Viewport</span>
+                    <!-- Right Column 3D Moon Interactive Control Panel -->
+                    <div class="lg:col-span-5">
+                        <div class="orbita-glass rounded-3xl p-8 border border-amber-500/30 relative text-center">
+                            <div class="text-xs font-heading font-bold uppercase tracking-widest text-amber-300 mb-4 flex items-center justify-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                                ИНТЕРАКТИВНАЯ ЛУННАЯ ОРБИТА
                             </div>
+                            <p class="text-xs text-slate-400 mb-6 font-light">Вращайте трехмерную Луну мышью и управляйте орбитальной фазой в реальном времени</p>
 
-                            <div class="aspect-square sm:aspect-video rounded-2xl relative bg-black/80 border border-white/10 overflow-hidden flex items-center justify-center">
-                                <div id="card-3d-viewport" class="w-full h-full cursor-grab"></div>
-                                <div class="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-md px-4 py-2.5 rounded-xl text-[11px] text-slate-300 flex justify-between items-center border border-white/10 pointer-events-none">
-                                    <span class="flex items-center gap-2">
-                                        <span class="text-cyan-400">🖱️</span> Вращайте 3D-модель
-                                    </span>
-                                    <span class="text-purple-400 font-bold font-heading">ORBITAL CORE v2</span>
-                                </div>
+                            <div class="space-y-4">
+                                <button onclick="rotateMoonPhase('full')" class="w-full py-3 px-4 rounded-2xl bg-white/5 hover:bg-amber-500/20 border border-white/10 text-xs font-heading font-bold text-slate-200 transition-all flex items-center justify-between">
+                                    <span>🌕 ПОЛНОЛУНИЕ (PARTY MODE)</span>
+                                    <span class="text-amber-400">&rarr;</span>
+                                </button>
+                                <button onclick="rotateMoonPhase('crescent')" class="w-full py-3 px-4 rounded-2xl bg-white/5 hover:bg-amber-500/20 border border-white/10 text-xs font-heading font-bold text-slate-200 transition-all flex items-center justify-between">
+                                    <span>🌙 ПОЛУМЕСЯЦ (LOUNGE MODE)</span>
+                                    <span class="text-amber-400">&rarr;</span>
+                                </button>
+                                <button onclick="rotateMoonPhase('eclipse')" class="w-full py-3 px-4 rounded-2xl bg-white/5 hover:bg-amber-500/20 border border-white/10 text-xs font-heading font-bold text-slate-200 transition-all flex items-center justify-between">
+                                    <span>🌑 ЗАТМЕНИЕ (NIGHT SOUND)</span>
+                                    <span class="text-amber-400">&rarr;</span>
+                                </button>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>
 
-        <!-- Lounge Zones Section -->
-        <section id="zones" class="py-28 relative">
+        <!-- Seating Map Section ("План рассадки") -->
+        <section id="seating" class="py-28 relative">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs uppercase tracking-widest font-bold mb-4">
-                        ПРОСТРАНСТВА
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs uppercase tracking-widest font-bold mb-4">
+                        ПРОСТРАНСТВО ОСОБНЯКА
                     </div>
-                    <h2 class="text-3xl sm:text-5xl font-black font-heading text-white">ЗОНЫ И ЛОКАЦИИ</h2>
-                    <p class="text-slate-400 text-sm mt-4">Каждая зона запрограммирована под свое уникальное световое и акустическое сопровождение</p>
+                    <h2 class="text-3xl sm:text-5xl font-black font-heading text-white">ПЛАН РАССАДКИ</h2>
+                    <p class="text-slate-400 text-sm mt-4">Нажмите на любой стол или зону, чтобы мгновенно забронировать визит</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach($zones as $zone)
-                        <div class="glass-card rounded-3xl p-7 flex flex-col justify-between hover:border-cyan-500/50 group relative overflow-hidden">
-                            <div>
-                                <div class="flex justify-between items-center mb-6">
-                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500/30 to-purple-600/30 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-bold font-heading text-lg group-hover:scale-110 transition-transform">
-                                        0{{ $loop->iteration }}
-                                    </div>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
-                                        {{ $zone['badge'] ?? 'Zone' }}
-                                    </span>
+                <!-- Interactive Map Visualization Grid -->
+                <div class="orbita-glass rounded-3xl p-6 sm:p-10 border border-amber-500/30 relative">
+                    <div class="grid grid-cols-12 gap-4 min-h-[420px]">
+
+                        <!-- Stage / Scene -->
+                        <div class="col-span-12 md:col-span-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex flex-col justify-between relative group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">СЦЕНА & ТАНЦПОЛ</span>
+                                    <h3 class="font-heading font-black text-2xl text-white mt-2">Главная Сцена</h3>
                                 </div>
-                                <h3 class="text-xl font-bold font-heading text-white mb-3 group-hover:text-cyan-400 transition-colors">{{ $zone['name'] }}</h3>
-                                <p class="text-slate-400 text-xs leading-relaxed mb-6">{{ $zone['description'] }}</p>
-                            </div>
-                            <div>
-                                <div class="flex items-center justify-between text-xs text-slate-300 pt-4 border-t border-white/10 mb-6">
-                                    <span>Вместимость:</span>
-                                    <span class="font-bold text-cyan-400 font-heading">{{ $zone['capacity'] }}</span>
-                                </div>
-                                <button onclick="openBookingModal('{{ $zone['name'] }}')" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-heading text-xs font-bold uppercase tracking-wider shadow-lg transition-all duration-300">
+                                <button onclick="openBookingModal('Главная Сцена')" class="px-4 py-2 rounded-xl bg-amber-400 text-black font-heading font-bold text-xs uppercase tracking-wider hover:bg-amber-300 transition-colors">
                                     Забронировать
                                 </button>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
 
-        <!-- Menu & Mixology Section with Interactive Filter -->
-        <section id="menu" class="py-28 relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-12">
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400 text-xs uppercase tracking-widest font-bold mb-4">
-                        ГАСТРОНОМИЯ & МИКСОЛОГИЯ
-                    </div>
-                    <h2 class="text-3xl sm:text-5xl font-black font-heading text-white">АВТОРСКОЕ МЕНЮ</h2>
-                </div>
-
-                <!-- Category Switch Tabs -->
-                <div class="flex justify-center mb-12">
-                    <div class="inline-flex p-1.5 rounded-full bg-black/70 border border-white/10 backdrop-blur-2xl">
-                        <button id="tab-bar" onclick="switchMenu('bar')" class="px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white shadow-xl">
-                            Коктейльная карта
-                        </button>
-                        <button id="tab-kitchen" onclick="switchMenu('kitchen')" class="px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white">
-                            Кухня & Гастрономия
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cocktail Menu Grid -->
-                <div id="menu-bar" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach($menu['bar'] as $item)
-                        <div class="glass-card p-6 rounded-3xl hover:border-cyan-500/60 transition-all flex justify-between items-start group relative overflow-hidden">
-                            <div>
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h4 class="font-heading font-bold text-white text-base group-hover:text-cyan-400 transition-colors">{{ $item['name'] }}</h4>
-                                </div>
-                                <p class="text-slate-400 text-xs mb-4 font-light leading-relaxed">{{ $item['desc'] }}</p>
-                                <span class="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                                    {{ $item['tag'] }}
-                                </span>
-                            </div>
-                            <div class="text-xl font-black font-heading text-cyan-400 whitespace-nowrap ml-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/10">
-                                {{ $item['price'] }}
+                            <!-- Clickable Tables 1..6 -->
+                            <div class="grid grid-cols-3 sm:grid-cols-6 gap-3 mt-6">
+                                @for($i = 1; $i <= 6; $i++)
+                                    <button onclick="openBookingModal('Стол №{{ $i }} (Сцена)')" class="map-table-btn py-4 rounded-xl text-center">
+                                        <div class="text-xs font-bold text-amber-300 font-heading">№ {{ $i }}</div>
+                                        <div class="text-[9px] text-slate-400 uppercase">2-4 мест</div>
+                                    </button>
+                                @endfor
                             </div>
                         </div>
-                    @endforeach
-                </div>
 
-                <!-- Kitchen Menu Grid -->
-                <div id="menu-kitchen" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-                    @foreach($menu['kitchen'] as $item)
-                        <div class="glass-card p-6 rounded-3xl hover:border-purple-500/60 transition-all flex justify-between items-start group relative overflow-hidden">
+                        <!-- Bar Zone -->
+                        <div class="col-span-12 md:col-span-4 bg-purple-500/10 border border-purple-500/30 rounded-2xl p-6 flex flex-col justify-between">
                             <div>
-                                <h4 class="font-heading font-bold text-white text-base mb-2 group-hover:text-purple-400 transition-colors">{{ $item['name'] }}</h4>
-                                <p class="text-slate-400 text-xs mb-4 font-light leading-relaxed">{{ $item['desc'] }}</p>
-                                <span class="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                    {{ $item['tag'] }}
-                                </span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">КОНТАКТНЫЙ БАР</span>
+                                <h3 class="font-heading font-black text-2xl text-white mt-2">Барный Остров</h3>
+                                <p class="text-xs text-slate-400 mt-2">Авторские коктейли и живой контакт с миксологами.</p>
                             </div>
-                            <div class="text-xl font-black font-heading text-purple-400 whitespace-nowrap ml-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/10">
-                                {{ $item['price'] }}
-                            </div>
+                            <button onclick="openBookingModal('Барная стойка')" class="w-full py-3 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-heading font-bold text-xs uppercase tracking-wider transition-colors mt-6">
+                                Забронировать бар
+                            </button>
                         </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
 
-        <!-- Events & Lineup Section -->
-        <section id="events" class="py-28 relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16">
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs uppercase tracking-widest font-bold mb-4">
-                        СОБЫТИЯ
-                    </div>
-                    <h2 class="text-3xl sm:text-5xl font-black font-heading text-white">АФИША & ЛАЙН-АП</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    @foreach($events as $event)
-                        <div class="glass-card rounded-3xl p-7 flex flex-col justify-between hover:border-pink-500/50 transition-all duration-300 group relative overflow-hidden">
+                        <!-- VIP Balcony Gallery -->
+                        <div class="col-span-12 md:col-span-4 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-6 flex flex-col justify-between">
                             <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="text-xs font-bold font-heading text-pink-400 bg-pink-500/10 px-3 py-1 rounded-full border border-pink-500/20">{{ $event['date'] }}</span>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
-                                        {{ $event['category'] }}
-                                    </span>
-                                </div>
-                                <h3 class="text-xl font-bold font-heading text-white mb-2 group-hover:text-pink-400 transition-colors">{{ $event['title'] }}</h3>
-                                <p class="text-slate-400 text-xs mb-6 leading-relaxed font-light">{{ $event['description'] }}</p>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">VIP VIEW</span>
+                                <h3 class="font-heading font-black text-xl text-white mt-2">Балконная Галерея</h3>
+                                <p class="text-xs text-slate-400 mt-1">Панорамная локация с видом на сцену.</p>
                             </div>
-                            <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-400">Хедлайнер: {{ $event['tag'] }}</span>
-                                <button onclick="openBookingModal('Событие: {{ $event['title'] }}')" class="text-xs font-heading font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-wider flex items-center gap-1">
-                                    Билет &rarr;
+                            <div class="grid grid-cols-2 gap-2 mt-4">
+                                <button onclick="openBookingModal('Стол №7 (Балкон)')" class="map-table-btn py-2.5 rounded-xl text-center">
+                                    <div class="text-xs font-bold text-indigo-300 font-heading">№ 7</div>
+                                    <div class="text-[9px] text-slate-400">4-6 мест</div>
+                                </button>
+                                <button onclick="openBookingModal('Стол №8 (Балкон)')" class="map-table-btn py-2.5 rounded-xl text-center">
+                                    <div class="text-xs font-bold text-indigo-300 font-heading">№ 8</div>
+                                    <div class="text-[9px] text-slate-400">4-6 мест</div>
                                 </button>
                             </div>
                         </div>
+
+                        <!-- Fireplace & Karaoke Room -->
+                        <div class="col-span-12 md:col-span-5 bg-rose-500/10 border border-rose-500/30 rounded-2xl p-6 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">УЮТ & МУЗЫКА</span>
+                                <h3 class="font-heading font-black text-xl text-white mt-2">Каминная & Караоке</h3>
+                                <p class="text-xs text-slate-400 mt-1">Камерная атмосфера с камином и виниловым звуком.</p>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mt-4">
+                                <button onclick="openBookingModal('Стол №9 (Каминная)')" class="map-table-btn py-2.5 rounded-xl text-center">
+                                    <div class="text-xs font-bold text-rose-300 font-heading">№ 9</div>
+                                    <div class="text-[9px] text-slate-400">2-4 мест</div>
+                                </button>
+                                <button onclick="openBookingModal('Стол №10 (Каминная)')" class="map-table-btn py-2.5 rounded-xl text-center">
+                                    <div class="text-xs font-bold text-rose-300 font-heading">№ 10</div>
+                                    <div class="text-[9px] text-slate-400">2-4 мест</div>
+                                </button>
+                                <button onclick="openBookingModal('Стол №11 (Каминная)')" class="map-table-btn py-2.5 rounded-xl text-center">
+                                    <div class="text-xs font-bold text-rose-300 font-heading">№ 11</div>
+                                    <div class="text-[9px] text-slate-400">6+ мест</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Coworking & Lounge Zone -->
+                        <div class="col-span-12 md:col-span-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">ДНЕВНОЙ ФОРМАТ</span>
+                                <h3 class="font-heading font-black text-xl text-white mt-2">Коворкинг</h3>
+                                <p class="text-xs text-slate-400 mt-1">Комфортные рабочие места и спешелти кофе.</p>
+                            </div>
+                            <button onclick="openBookingModal('Дневной Коворкинг')" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-heading font-bold text-xs uppercase tracking-wider transition-colors mt-4">
+                                Забронировать
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Section (Kitchen & Bar) -->
+        <section id="menu" class="py-28 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs uppercase tracking-widest font-bold mb-4">
+                        ГАСТРОНОМИЯ & МИКСОЛОГИЯ
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-black font-heading text-white">В НАШЕМ МЕНЮ</h2>
+                    <p class="text-slate-400 text-sm mt-3">С авторским взглядом от шеф-повара и шеф-бармена</p>
+                </div>
+
+                <!-- Tabs Switcher -->
+                <div class="flex justify-center mb-12">
+                    <div class="inline-flex p-1.5 rounded-full bg-black/80 border border-white/10 backdrop-blur-2xl">
+                        <button id="tab-kitchen" onclick="switchMenu('kitchen')" class="px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-amber-300 to-amber-500 text-black shadow-xl">
+                            МЕНЮ КУХНИ
+                        </button>
+                        <button id="tab-bar" onclick="switchMenu('bar')" class="px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white">
+                            БАРНОЕ МЕНЮ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kitchen Menu Grid -->
+                <div id="menu-kitchen" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($menu['kitchen'] as $item)
+                        <div class="orbita-glass p-6 rounded-3xl flex flex-col justify-between group">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-heading font-bold text-white text-base group-hover:text-amber-300 transition-colors">{{ $item['name'] }}</h4>
+                                    <span class="text-lg font-black font-heading text-amber-300 ml-4 whitespace-nowrap">{{ $item['price'] }}</span>
+                                </div>
+                                <p class="text-slate-400 text-xs mb-4 font-light leading-relaxed">{{ $item['desc'] }}</p>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                                    {{ $item['tag'] }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Bar Menu Grid -->
+                <div id="menu-bar" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                    @foreach($menu['bar'] as $item)
+                        <div class="orbita-glass p-6 rounded-3xl flex flex-col justify-between group">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-heading font-bold text-white text-base group-hover:text-amber-300 transition-colors">{{ $item['name'] }}</h4>
+                                    <span class="text-lg font-black font-heading text-amber-300 ml-4 whitespace-nowrap">{{ $item['price'] }}</span>
+                                </div>
+                                <p class="text-slate-400 text-xs mb-4 font-light leading-relaxed">{{ $item['desc'] }}</p>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                                    {{ $item['tag'] }}
+                                </span>
+                            </div>
+                        </div>
                     @endforeach
                 </div>
             </div>
         </section>
 
-        <!-- Loyalty Calculator Section -->
+        <!-- Loyalty Program ("Орбитальность") -->
         <section id="loyalty" class="py-28 relative">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="glass-card rounded-3xl border border-purple-500/30 p-8 sm:p-14 relative overflow-hidden">
+                <div class="orbita-glass rounded-3xl border border-amber-500/30 p-8 sm:p-14 relative overflow-hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        <div class="lg:col-span-6">
-                            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/20 text-purple-300 text-xs uppercase tracking-widest font-bold mb-6">
+
+                        <div class="lg:col-span-6 space-y-6">
+                            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs uppercase tracking-widest font-bold">
                                 ПРОГРАММА ЛОЯЛЬНОСТИ
                             </div>
-                            <h2 class="text-3xl sm:text-5xl font-black font-heading text-white mb-6">«ОРБИТАЛЬНОСТЬ»</h2>
-                            <p class="text-slate-300 text-base mb-8 leading-relaxed font-light">
-                                Каждое посещение повышает ваш персональный орбитальный коэффициент. Получайте бесплатные коктейли, приоритетную бронь и приглашения на закрытые ивенты.
+                            <h2 class="text-3xl sm:text-5xl font-black font-heading text-white">«ОРБИТАЛЬНОСТЬ»</h2>
+                            <p class="text-slate-300 text-base leading-relaxed font-light">
+                                Получай бонусы, скидки и закрытый доступ. Набираешь баллы и поднимаешься по четырем уровням, открывая лимитки мерча, спешелти бонусы и личные приглашения от Вани Дмитриенко.
                             </p>
 
-                            <!-- Loyalty Interactive Calculator Slider -->
-                            <div class="bg-black/60 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
+                            <!-- Interactive Points Calculator Slider -->
+                            <div class="bg-black/70 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
                                 <div class="flex justify-between items-center mb-2">
-                                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider font-heading">Расчет кэшбэка в месяц</span>
-                                    <span id="calc-budget-text" class="text-cyan-400 font-black font-heading text-lg">30 000 ₽</span>
+                                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider font-heading">Сумма чека в месяц</span>
+                                    <span id="calc-budget-text" class="text-amber-300 font-black font-heading text-lg">25 000 ₽</span>
                                 </div>
-                                <input type="range" id="loyalty-slider" min="5000" max="100000" step="5000" value="30000" oninput="updateLoyaltyCalc(this.value)" class="w-full accent-cyan-400 h-2 bg-slate-800 rounded-lg cursor-pointer my-4">
+                                <input type="range" id="loyalty-slider" min="5000" max="100000" step="5000" value="25000" oninput="updateLoyaltyCalc(this.value)" class="w-full accent-amber-400 h-2 bg-slate-800 rounded-lg cursor-pointer my-4">
 
                                 <div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
                                     <div>
-                                        <div class="text-[10px] text-slate-400 uppercase font-bold">Ваш Статус:</div>
-                                        <div id="calc-status" class="text-purple-400 font-heading font-bold text-base">Орбита</div>
+                                        <div class="text-[10px] text-slate-400 uppercase font-bold">Ваш статус:</div>
+                                        <div id="calc-status" class="text-amber-300 font-heading font-bold text-base">Уровень 2: Орбита</div>
                                     </div>
                                     <div>
                                         <div class="text-[10px] text-slate-400 uppercase font-bold">Кэшбэк на счет:</div>
-                                        <div id="calc-cashback" class="text-cyan-400 font-heading font-bold text-base">3 000 ₽ / мес</div>
+                                        <div id="calc-cashback" class="text-amber-300 font-heading font-bold text-base">2 500 ₽ / мес</div>
                                     </div>
                                 </div>
                             </div>
+
+                            <a href="https://www.t.me/orbitabar_bot" target="_blank" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 text-black font-heading font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-transform">
+                                РЕГИСТРИРУЙСЯ В ОРБИТАЛЬНОСТИ
+                            </a>
                         </div>
 
-                        <!-- Loyalty Cards Tiers -->
-                        <div class="lg:col-span-6 grid grid-cols-1 gap-4">
+                        <!-- Tier Cards Grid -->
+                        <div class="lg:col-span-6 space-y-4">
                             @foreach($loyaltyTiers as $tier)
-                                <div class="glass-card p-6 rounded-2xl border border-white/10 flex items-center justify-between hover:border-cyan-500/40 transition-all">
+                                <div class="orbita-glass p-6 rounded-2xl border border-white/10 flex items-center justify-between hover:border-amber-500/40 transition-all">
                                     <div>
                                         <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Уровень {{ $loop->iteration }}</div>
                                         <h4 class="font-heading font-bold text-lg text-white mb-1">{{ $tier['tier'] }}</h4>
                                         <div class="text-xs text-slate-300">{{ $tier['perk'] }}</div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-2xl font-black font-heading text-cyan-400">{{ $tier['cashback'] }}</div>
+                                        <div class="text-2xl font-black font-heading text-amber-300">{{ $tier['cashback'] }}</div>
                                         <div class="text-[10px] text-slate-400 uppercase">{{ $tier['condition'] }}</div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
+
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Location & Contact -->
+        <!-- Team & Careers -->
+        <section id="team" class="py-28 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs uppercase tracking-widest font-bold mb-4">
+                    КОМАНДА ОРБИТЫ
+                </div>
+                <h2 class="text-3xl sm:text-5xl font-black font-heading text-white mb-6">СОЗДАВАЙ АТМОСФЕРУ ВМЕСТЕ С НАМИ</h2>
+                <p class="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-light mb-8">
+                    Работа в Орбите — это возможность развиваться и вместе создавать уникальное культурное пространство. Мы — команда творческих людей, которые ценят свободу, креатив и открытость.
+                </p>
+                <a href="#contacts" onclick="openBookingModal('Заявка в команду')" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-heading text-xs font-bold uppercase tracking-widest transition-all">
+                    СТАТЬ ЧАСТЬЮ КОМАНДЫ &rarr;
+                </a>
+            </div>
+        </section>
+
+        <!-- Location & Contact Section -->
         <section id="contacts" class="py-28 relative">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div>
-                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs uppercase tracking-widest font-bold mb-6">
-                            ЛОКАЦИЯ
-                        </div>
-                        <h2 class="text-3xl sm:text-5xl font-black font-heading text-white mb-8">ЖДЕМ ВАС НА ОРБИТЕ</h2>
 
-                        <div class="space-y-6 text-slate-300">
-                            <div class="flex items-start gap-5 glass-card p-5 rounded-2xl">
-                                <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 font-bold text-xl">📍</div>
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs uppercase tracking-widest font-bold">
+                            КОНТАКТЫ & МАРШРУТ
+                        </div>
+                        <h2 class="text-3xl sm:text-5xl font-black font-heading text-white">ИЩИ НАС ЗДЕСЬ</h2>
+
+                        <div class="space-y-4 text-slate-300">
+                            <div class="orbita-glass p-5 rounded-2xl flex items-start gap-4">
+                                <span class="text-2xl">📍</span>
                                 <div>
-                                    <div class="text-xs text-slate-400 uppercase font-bold tracking-wider">Адрес</div>
-                                    <div class="font-semibold text-white text-base">г. Москва, ул. Космонавтов, д. 12</div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Адрес</div>
+                                    <div class="font-bold text-white text-sm mt-0.5">г. Москва, улица Яузская 1/15</div>
+                                    <div class="text-xs text-slate-400 mt-0.5">Ближайшие станции метро: Китай-город, Таганская</div>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-5 glass-card p-5 rounded-2xl">
-                                <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold text-xl">⏰</div>
+
+                            <div class="orbita-glass p-5 rounded-2xl flex items-start gap-4">
+                                <span class="text-2xl">⏰</span>
                                 <div>
-                                    <div class="text-xs text-slate-400 uppercase font-bold tracking-wider">Режим работы</div>
-                                    <div class="font-semibold text-white text-base">Пн - Чт: 18:00 - 02:00 | Пт - Сб: 18:00 - 06:00</div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Время работы</div>
+                                    <div class="font-bold text-white text-sm mt-0.5">Вс – Чт: 12:00 — 00:00</div>
+                                    <div class="font-bold text-amber-300 text-sm">Пт – Сб: 12:00 — 03:00</div>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-5 glass-card p-5 rounded-2xl">
-                                <div class="w-12 h-12 rounded-2xl bg-pink-500/20 border border-pink-500/30 flex items-center justify-center text-pink-400 font-bold text-xl">📞</div>
+
+                            <div class="orbita-glass p-5 rounded-2xl flex items-start gap-4">
+                                <span class="text-2xl">📞</span>
                                 <div>
-                                    <div class="text-xs text-slate-400 uppercase font-bold tracking-wider">Телефон для брони</div>
-                                    <div class="font-semibold text-white text-base">+7 (495) 888-00-11</div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Бронирование & Инфо</div>
+                                    <div class="font-bold text-white text-sm mt-0.5">+7 (495) 141-05-55</div>
+                                    <div class="text-xs text-slate-400 mt-0.5">orbita.yauza@gmail.com</div>
                                 </div>
                             </div>
                         </div>
+
+                        <a href="https://yandex.ru/maps/org/orbita/200600732534" target="_blank" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 text-black font-heading font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-transform">
+                            ПОСТРОИТЬ МАРШРУТ НА КАРТЕ
+                        </a>
                     </div>
 
-                    <!-- Map Container -->
-                    <div class="rounded-3xl overflow-hidden border border-white/10 h-80 sm:h-auto min-h-[360px] relative bg-slate-900 shadow-2xl">
-                        <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A021b36585141b7ddae441b897e9ed2ddf3e0c03490919df434ec9c1a0be5f606&amp;source=constructor" width="100%" height="100%" frameborder="0" class="w-full h-full opacity-80 hover:opacity-100 transition-opacity"></iframe>
+                    <!-- Interactive Map Viewport -->
+                    <div class="rounded-3xl overflow-hidden border border-white/10 h-80 sm:h-auto min-h-[380px] relative bg-slate-900 shadow-2xl">
+                        <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Aa51483f6d6e1bdd5fd51fccd95c1ec128ee72b0b3000d23fd9abd084b712a3df&amp;source=constructor" width="100%" height="100%" frameborder="0" class="w-full h-full opacity-85 hover:opacity-100 transition-opacity"></iframe>
                     </div>
+
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer class="border-t border-white/10 py-12 relative bg-black/40">
+        <footer class="border-t border-white/10 py-12 relative bg-black/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div class="text-slate-400 text-xs font-light">
-                    © 2026 ОРБИТА CYBER LOUNGE. Все права защищены.
+                <div class="flex items-center gap-3">
+                    <span class="text-amber-300 font-heading font-black text-xl">ОРБИТА</span>
+                    <span class="text-slate-500 text-xs">|</span>
+                    <span class="text-slate-400 text-xs font-light">© 2026 ОРБИТА БАР. Исторический особняк на Яузской.</span>
                 </div>
                 <div class="flex items-center gap-6 text-slate-400 text-xs font-semibold">
-                    <a href="#" class="hover:text-cyan-400 transition-colors">Telegram</a>
-                    <a href="#" class="hover:text-purple-400 transition-colors">VKontakte</a>
-                    <a href="#" class="hover:text-pink-400 transition-colors">Instagram</a>
+                    <a href="https://t.me/orbita_yauza" target="_blank" class="hover:text-amber-300 transition-colors">Telegram</a>
+                    <a href="https://vk.com/orbita_yauza" target="_blank" class="hover:text-amber-300 transition-colors">VKontakte</a>
+                    <a href="https://www.tiktok.com/@orbita_yauza" target="_blank" class="hover:text-amber-300 transition-colors">TikTok</a>
                 </div>
             </div>
         </footer>
 
     </div>
 
-    <!-- HIGH-END CYBERPUNK BOOKING MODAL -->
-    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl hidden opacity-0 transition-all duration-300">
-        <div class="bg-[#090b14] border border-cyan-500/40 rounded-3xl p-6 sm:p-10 max-w-lg w-full relative shadow-[0_0_80px_rgba(6,182,212,0.25)] overflow-hidden">
-            <div class="cyber-scanline"></div>
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-2xl hidden opacity-0 transition-all duration-300">
+        <div class="bg-[#0f111a] border border-amber-500/40 rounded-3xl p-6 sm:p-10 max-w-lg w-full relative shadow-[0_0_80px_rgba(226,184,116,0.2)] overflow-hidden">
 
-            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white font-bold text-2xl w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors hover:border-cyan-400">&times;</button>
+            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white font-bold text-2xl w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors hover:border-amber-400">&times;</button>
 
-            <div class="flex items-center gap-3 mb-2">
-                <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></span>
-                <span class="text-xs uppercase font-bold tracking-widest text-cyan-400 font-heading">ОНЛАЙН-РЕЗЕРВ СТОЛА</span>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+                <span class="text-xs uppercase font-bold tracking-widest text-amber-300 font-heading">ОНЛАЙН-РЕЗЕРВ СТОЛА</span>
             </div>
 
             <h3 class="font-heading font-black text-2xl sm:text-3xl text-white mb-2">БРОНИРОВАНИЕ</h3>
             <p id="modal-subtitle" class="text-xs text-slate-400 mb-8 font-light">Локация: Главная сцена</p>
 
-            <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-5">
+            <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-4">
                 <input type="hidden" id="booking-zone" name="zone" value="Главная сцена">
                 <input type="hidden" id="booking-guests" name="guests" value="2">
 
-                <!-- Cyber Input: Name -->
-                <div class="cyber-input-group">
-                    <span class="cyber-input-icon">👤</span>
-                    <input type="text" name="name" required class="cyber-input" placeholder="Ваше полное имя">
-                </div>
-
-                <!-- Cyber Input: Phone -->
-                <div class="cyber-input-group">
-                    <span class="cyber-input-icon">📱</span>
-                    <input type="tel" name="phone" required class="cyber-input" placeholder="+7 (999) 000-00-00">
-                </div>
-
-                <!-- Cyber Inputs: Date & Time -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="cyber-input-group">
-                        <span class="cyber-input-icon">📅</span>
-                        <input type="date" name="date" required class="cyber-input text-slate-200">
-                    </div>
-                    <div class="cyber-input-group">
-                        <span class="cyber-input-icon">⏰</span>
-                        <input type="time" name="time" required class="cyber-input text-slate-200">
-                    </div>
-                </div>
-
-                <!-- Non-Basic Custom Guest Selector Pills -->
                 <div>
-                    <label class="block text-[11px] uppercase font-bold tracking-wider text-slate-300 mb-2 font-heading">Количество гостей</label>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button type="button" onclick="selectGuests(1, this)" class="guest-btn">1 гость</button>
-                        <button type="button" onclick="selectGuests(2, this)" class="guest-btn active">2 гостя</button>
-                        <button type="button" onclick="selectGuests(4, this)" class="guest-btn">4 гостя</button>
-                        <button type="button" onclick="selectGuests(6, this)" class="guest-btn">6+ гостей</button>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-300 mb-1 font-heading">Ваше имя</label>
+                    <input type="text" name="name" required class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors" placeholder="Иван Иванов">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-300 mb-1 font-heading">Телефон</label>
+                    <input type="tel" name="phone" required class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors" placeholder="+7 (999) 000-00-00">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-300 mb-1 font-heading">Дата</label>
+                        <input type="date" name="date" required class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-300 mb-1 font-heading">Время</label>
+                        <input type="time" name="time" required class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors">
                     </div>
                 </div>
 
-                <button type="submit" class="w-full py-4 mt-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white font-heading font-black text-xs uppercase tracking-widest shadow-xl shadow-cyan-500/30 hover:shadow-cyan-500/60 hover:scale-[1.02] transition-all duration-300">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-300 mb-2 font-heading">Количество гостей</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="selectGuests(1, this)" class="guest-pill py-2.5 rounded-xl text-xs font-heading font-bold">1 гость</button>
+                        <button type="button" onclick="selectGuests(2, this)" class="guest-pill py-2.5 rounded-xl text-xs font-heading font-bold active">2 гостя</button>
+                        <button type="button" onclick="selectGuests(4, this)" class="guest-pill py-2.5 rounded-xl text-xs font-heading font-bold">4 гостя</button>
+                        <button type="button" onclick="selectGuests(6, this)" class="guest-pill py-2.5 rounded-xl text-xs font-heading font-bold">6+ гостей</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 mt-4 rounded-xl bg-gradient-to-r from-amber-300 via-amber-500 to-amber-600 text-black font-heading font-black text-xs uppercase tracking-widest shadow-xl shadow-amber-500/20 hover:scale-[1.02] transition-transform">
                     ПОДТВЕРДИТЬ БРОНИРОВАНИЕ
                 </button>
             </form>
 
             <div id="booking-success" class="hidden text-center py-8">
-                <div class="w-20 h-20 bg-cyan-500/20 border border-cyan-400 text-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-3xl animate-bounce shadow-lg shadow-cyan-500/30">✓</div>
+                <div class="w-16 h-16 bg-amber-500/20 border border-amber-400 text-amber-300 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl animate-bounce">✓</div>
                 <h4 class="font-heading font-bold text-2xl text-white mb-2">БРОНЬ ПОДТВЕРЖДЕНА!</h4>
-                <p class="text-slate-300 text-xs max-w-xs mx-auto leading-relaxed">Система зафиксировала ваш визит. Менеджер свяжется с вами для подтверждения.</p>
+                <p class="text-slate-300 text-xs max-w-xs mx-auto leading-relaxed">Система зафиксировала ваш визит. Ждем вас на Яузской 1/15!</p>
             </div>
         </div>
     </div>
 
-    <!-- Scripts section for Custom Cursor, Web Audio, Three.js 3D Background & Viewport -->
+    <!-- WebGL Three.js Realistic Moon & Atmosphere Script -->
     <script>
-        // --- 1. CUSTOM CYBER CURSOR SCRIPT ---
-        const cursor = document.getElementById('cyber-cursor');
-        const cursorDot = document.getElementById('cyber-cursor-dot');
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            cursorDot.style.left = e.clientX + 'px';
-            cursorDot.style.top = e.clientY + 'px';
-        });
-
-        document.querySelectorAll('a, button, input, select, .guest-btn').forEach(elem => {
-            elem.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
-                cursor.style.borderColor = '#ec4899';
-                cursor.style.backgroundColor = 'rgba(236, 72, 153, 0.1)';
-            });
-            elem.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                cursor.style.borderColor = '#06b6d4';
-                cursor.style.backgroundColor = 'transparent';
-            });
-        });
-
-
-        // --- 2. WEB AUDIO AMBIENT SYNTH & SOUND FX ---
-        let audioCtx = null;
-        let ambientOsc = null;
-        let isAudioOn = false;
-
-        function toggleAudioSynth() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            const eqIcon = document.getElementById('equalizer-icon');
-
-            if (!isAudioOn) {
-                // Play ambient drone
-                ambientOsc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                ambientOsc.type = 'sine';
-                ambientOsc.frequency.setValueAtTime(110, audioCtx.currentTime); // Low A note
-                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-                ambientOsc.connect(gain);
-                gain.connect(audioCtx.destination);
-                ambientOsc.start();
-
-                isAudioOn = true;
-                eqIcon.style.opacity = '1';
-                document.getElementById('audio-status').innerText = 'SOUND: ON';
-            } else {
-                if (ambientOsc) ambientOsc.stop();
-                isAudioOn = false;
-                eqIcon.style.opacity = '0.4';
-                document.getElementById('audio-status').innerText = 'SOUND: OFF';
-            }
-        }
-
-
-        // --- 3. FULLSCREEN THREE.JS 3D BACKGROUND ---
-        const container = document.getElementById('canvas-container');
+        // --- 1. THREE.JS REALISTIC MOON & CELESTIAL BACKGROUND ---
+        const container = document.getElementById('moon-canvas-container');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x020205, 0.015);
+        scene.fog = new THREE.FogExp2(0x07080c, 0.012);
 
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 30;
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 24;
 
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
         scene.add(ambientLight);
 
-        const cyanLight = new THREE.PointLight(0x06b6d4, 5, 70);
-        cyanLight.position.set(25, 20, 20);
-        scene.add(cyanLight);
+        // Key Directional Sunlight (Lunar Phase)
+        const sunLight = new THREE.DirectionalLight(0xfff3d1, 3.5);
+        sunLight.position.set(20, 10, 15);
+        scene.add(sunLight);
 
-        const purpleLight = new THREE.PointLight(0xa855f7, 5, 70);
-        purpleLight.position.set(-25, -20, 20);
-        scene.add(purpleLight);
+        // Soft Lunar Aura PointLight
+        const lunarAuraLight = new THREE.PointLight(0xe2b874, 2, 40);
+        lunarAuraLight.position.set(-10, -10, 10);
+        scene.add(lunarAuraLight);
 
-        const pinkLight = new THREE.PointLight(0xec4899, 4, 60);
-        pinkLight.position.set(0, 15, -15);
-        scene.add(pinkLight);
+        // 3D Moon Mesh
+        const moonGroup = new THREE.Group();
+        scene.add(moonGroup);
 
-        // 3D Orbital Mesh Group
-        const orbitGroup = new THREE.Group();
-        scene.add(orbitGroup);
+        const moonGeo = new THREE.SphereGeometry(6, 64, 64);
 
-        // Central Multi-Layer Torus Knot Core
-        const knotGeo = new THREE.TorusKnotGeometry(6.5, 1.4, 128, 32);
-        const knotMat = new THREE.MeshStandardMaterial({
-            color: 0x06b6d4,
-            metalness: 0.9,
-            roughness: 0.1,
-            flatShading: false
-        });
-        const knotWireMat = new THREE.MeshBasicMaterial({
-            color: 0xec4899,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.4
-        });
+        // Procedural Lunar Surface Texture Generator using Canvas
+        function generateMoonTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
 
-        const torusKnot = new THREE.Mesh(knotGeo, knotMat);
-        const torusKnotWire = new THREE.Mesh(knotGeo, knotWireMat);
-        torusKnot.add(torusKnotWire);
-        orbitGroup.add(torusKnot);
+            // Lunar base gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, 512);
+            grad.addColorStop(0, '#8c8e9e');
+            grad.addColorStop(0.5, '#b0b2c4');
+            grad.addColorStop(1, '#696b78');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 1024, 512);
 
-        // Orbital Concentric Glow Rings
-        const ringGeo1 = new THREE.TorusGeometry(15, 0.2, 16, 120);
-        const ringMat1 = new THREE.MeshStandardMaterial({ color: 0x06b6d4, metalness: 0.95, roughness: 0.05 });
-        const ring1 = new THREE.Mesh(ringGeo1, ringMat1);
-        ring1.rotation.x = Math.PI / 3;
-        orbitGroup.add(ring1);
+            // Add procedural craters & maria dark spots
+            ctx.fillStyle = 'rgba(40, 42, 55, 0.35)';
+            for (let i = 0; i < 180; i++) {
+                const x = Math.random() * 1024;
+                const y = Math.random() * 512;
+                const r = 10 + Math.random() * 60;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
 
-        const ringGeo2 = new THREE.TorusGeometry(19, 0.15, 16, 120);
-        const ringMat2 = new THREE.MeshStandardMaterial({ color: 0xa855f7, metalness: 0.95, roughness: 0.05 });
-        const ring2 = new THREE.Mesh(ringGeo2, ringMat2);
-        ring2.rotation.y = Math.PI / 4;
-        orbitGroup.add(ring2);
+            // Crater rims
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 90; i++) {
+                const x = Math.random() * 1024;
+                const y = Math.random() * 512;
+                const r = 4 + Math.random() * 25;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
 
-        // Floating Kinetic Polyhedron Crystals
-        const floatingObjects = [];
-        const geoms = [
-            new THREE.DodecahedronGeometry(1.6, 0),
-            new THREE.OctahedronGeometry(1.5, 0),
-            new THREE.IcosahedronGeometry(1.7, 0)
-        ];
-        const colors = [0x06b6d4, 0xa855f7, 0xec4899, 0x6366f1];
-
-        for (let i = 0; i < 20; i++) {
-            const g = geoms[i % geoms.length];
-            const m = new THREE.MeshStandardMaterial({
-                color: colors[i % colors.length],
-                metalness: 0.85,
-                roughness: 0.15,
-                flatShading: true
-            });
-            const mesh = new THREE.Mesh(g, m);
-
-            const radius = 13 + Math.random() * 18;
-            const angle = (i / 20) * Math.PI * 2;
-            mesh.position.x = Math.cos(angle) * radius;
-            mesh.position.y = (Math.random() - 0.5) * 16;
-            mesh.position.z = Math.sin(angle) * radius;
-
-            mesh.userData = {
-                angle: angle,
-                radius: radius,
-                speed: 0.002 + Math.random() * 0.003,
-                rotX: (Math.random() - 0.5) * 0.02,
-                rotY: (Math.random() - 0.5) * 0.02
-            };
-
-            floatingObjects.push(mesh);
-            orbitGroup.add(mesh);
+            return new THREE.CanvasTexture(canvas);
         }
 
-        // Starfield Particles
-        const particleCount = 1500;
-        const particleGeo = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
+        const moonTex = generateMoonTexture();
+        const moonMat = new THREE.MeshStandardMaterial({
+            map: moonTex,
+            roughness: 0.85,
+            metalness: 0.1,
+            bumpMap: moonTex,
+            bumpScale: 0.15
+        });
 
-        for (let i = 0; i < particleCount * 3; i += 3) {
-            positions[i] = (Math.random() - 0.5) * 140;
-            positions[i + 1] = (Math.random() - 0.5) * 140;
-            positions[i + 2] = (Math.random() - 0.5) * 140;
+        const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+        moonMesh.position.set(7, 2, -2);
+        moonGroup.add(moonMesh);
+
+        // Orbital Golden Dust Ring
+        const ringGeo = new THREE.TorusGeometry(10.5, 0.08, 16, 120);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xe2b874, transparent: true, opacity: 0.4 });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.position.set(7, 2, -2);
+        ringMesh.rotation.x = Math.PI / 2.5;
+        moonGroup.add(ringMesh);
+
+        // Background Star Particles
+        const starCount = 1200;
+        const starGeo = new THREE.BufferGeometry();
+        const starPos = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i += 3) {
+            starPos[i] = (Math.random() - 0.5) * 120;
+            starPos[i + 1] = (Math.random() - 0.5) * 120;
+            starPos[i + 2] = (Math.random() - 0.5) * 120;
         }
 
-        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const particleMat = new THREE.PointsMaterial({
-            size: 0.2,
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.8
-        });
-        const starfield = new THREE.Points(particleGeo, particleMat);
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({ size: 0.18, color: 0xffffff, transparent: true, opacity: 0.75 });
+        const starfield = new THREE.Points(starGeo, starMat);
         scene.add(starfield);
 
-        // Smooth Mouse Parallax
+        // Mouse Parallax Controls
         let mouseX = 0, mouseY = 0;
         let targetX = 0, targetY = 0;
 
         window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.0008;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.0008;
         });
 
         window.addEventListener('resize', () => {
@@ -984,158 +874,116 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        // Animation Loop
         const clock = new THREE.Clock();
 
         function animate() {
             requestAnimationFrame(animate);
-
-            const elapsedTime = clock.getElapsedTime();
+            const delta = clock.getElapsedTime();
 
             targetX += (mouseX - targetX) * 0.05;
             targetY += (mouseY - targetY) * 0.05;
 
-            orbitGroup.rotation.y = elapsedTime * 0.22 + targetX * 2.5;
-            orbitGroup.rotation.x = Math.sin(elapsedTime * 0.2) * 0.25 + targetY * 2.5;
+            moonMesh.rotation.y = delta * 0.08 + targetX * 3;
+            moonMesh.rotation.x = Math.sin(delta * 0.1) * 0.1 + targetY * 3;
 
-            torusKnot.rotation.x = elapsedTime * 0.35;
-            torusKnot.rotation.y = elapsedTime * 0.45;
-
-            floatingObjects.forEach((obj) => {
-                obj.userData.angle += obj.userData.speed;
-                obj.position.x = Math.cos(obj.userData.angle) * obj.userData.radius;
-                obj.position.z = Math.sin(obj.userData.angle) * obj.userData.radius;
-                obj.rotation.x += obj.userData.rotX;
-                obj.rotation.y += obj.userData.rotY;
-            });
-
-            starfield.rotation.y = elapsedTime * 0.012;
+            ringMesh.rotation.z = delta * 0.15;
+            starfield.rotation.y = delta * 0.01;
 
             renderer.render(scene, camera);
         }
 
         animate();
 
-
-        // --- 4. CONCEPT 3D MODEL VIEWPORT ---
-        const cardViewport = document.getElementById('card-3d-viewport');
-        if (cardViewport) {
-            const cardScene = new THREE.Scene();
-            const cardCamera = new THREE.PerspectiveCamera(50, cardViewport.clientWidth / cardViewport.clientHeight, 0.1, 100);
-            cardCamera.position.z = 7;
-
-            const cardRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            cardRenderer.setSize(cardViewport.clientWidth, cardViewport.clientHeight);
-            cardRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            cardViewport.appendChild(cardRenderer.domElement);
-
-            const cardLight1 = new THREE.PointLight(0x06b6d4, 4, 30);
-            cardLight1.position.set(5, 5, 5);
-            cardScene.add(cardLight1);
-
-            const cardLight2 = new THREE.PointLight(0xec4899, 4, 30);
-            cardLight2.position.set(-5, -5, 5);
-            cardScene.add(cardLight2);
-
-            const cardGeo = new THREE.IcosahedronGeometry(2.2, 1);
-            const cardMat = new THREE.MeshStandardMaterial({
-                color: 0x06b6d4,
-                metalness: 0.95,
-                roughness: 0.05
-            });
-            const cardWireMat = new THREE.MeshBasicMaterial({ color: 0xec4899, wireframe: true });
-
-            const cardMesh = new THREE.Mesh(cardGeo, cardMat);
-            const cardWire = new THREE.Mesh(cardGeo, cardWireMat);
-            cardMesh.add(cardWire);
-            cardScene.add(cardMesh);
-
-            let isDragging = false;
-            let previousMousePosition = { x: 0, y: 0 };
-
-            cardViewport.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
-
-            window.addEventListener('mouseup', () => isDragging = false);
-
-            cardViewport.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaX = e.clientX - previousMousePosition.x;
-                const deltaY = e.clientY - previousMousePosition.y;
-
-                cardMesh.rotation.y += deltaX * 0.01;
-                cardMesh.rotation.x += deltaY * 0.01;
-
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
-
-            function animateCard() {
-                requestAnimationFrame(animateCard);
-                if (!isDragging) {
-                    cardMesh.rotation.y += 0.01;
-                    cardMesh.rotation.x += 0.005;
-                }
-                cardRenderer.render(cardScene, cardCamera);
+        // --- 2. MOON PHASE CONTROL INTERACTION ---
+        function rotateMoonPhase(phase) {
+            if (phase === 'full') {
+                sunLight.position.set(10, 10, 25);
+                sunLight.intensity = 4.0;
+            } else if (phase === 'crescent') {
+                sunLight.position.set(-25, 5, 10);
+                sunLight.intensity = 3.0;
+            } else if (phase === 'eclipse') {
+                sunLight.position.set(0, -25, -10);
+                sunLight.intensity = 0.8;
             }
-            animateCard();
         }
 
+        // --- 3. DAY / NIGHT ATMOSPHERE TOGGLE ---
+        let isDayMode = false;
+        function toggleDayNightMode() {
+            isDayMode = !isDayMode;
+            const body = document.body;
+            const icon = document.getElementById('mode-icon');
+            const label = document.getElementById('mode-label');
 
-        // --- 5. INTERACTIVE LOYALTY CALCULATOR ---
+            if (isDayMode) {
+                body.classList.add('theme-day');
+                icon.innerText = '☀️';
+                label.innerText = 'РЕЖИМ: ДЕНЬ';
+                scene.fog.color.setHex(0x0f121a);
+                sunLight.color.setHex(0xffaa44);
+            } else {
+                body.classList.remove('theme-day');
+                icon.innerText = '🌙';
+                label.innerText = 'РЕЖИМ: НОЧЬ';
+                scene.fog.color.setHex(0x07080c);
+                sunLight.color.setHex(0xfff3d1);
+            }
+        }
+
+        // --- 4. LOYALTY CALCULATOR ---
         function updateLoyaltyCalc(val) {
             const budgetText = document.getElementById('calc-budget-text');
             const statusText = document.getElementById('calc-status');
             const cashbackText = document.getElementById('calc-cashback');
 
-            const formatted = new Intl.NumberFormat('ru-RU').format(val) + ' ₽';
-            budgetText.innerText = formatted;
+            budgetText.innerText = new Intl.NumberFormat('ru-RU').format(val) + ' ₽';
 
-            let status = 'Спутник (5%)';
+            let status = 'Уровень 1: Спутник (5%)';
             let percent = 0.05;
 
             if (val >= 50000) {
-                status = 'Невесомость (15%)';
+                status = 'Уровень 3: Гравитация (15%)';
                 percent = 0.15;
             } else if (val >= 20000) {
-                status = 'Орбита (10%)';
+                status = 'Уровень 2: Орбита (10%)';
                 percent = 0.10;
             }
 
-            const cashbackAmount = Math.round(val * percent);
+            const cashback = Math.round(val * percent);
             statusText.innerText = status;
-            cashbackText.innerText = new Intl.NumberFormat('ru-RU').format(cashbackAmount) + ' ₽ / мес';
+            cashbackText.innerText = new Intl.NumberFormat('ru-RU').format(cashback) + ' ₽ / мес';
         }
 
-
-        // --- 6. GUEST SELECTOR PILLS LOGIC ---
+        // --- 5. GUEST PILLS ---
         function selectGuests(count, btn) {
             document.getElementById('booking-guests').value = count;
-            document.querySelectorAll('.guest-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.guest-pill').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
 
-
-        // --- 7. TABS & MODAL LOGIC ---
+        // --- 6. MENU TABS ---
         function switchMenu(type) {
-            const barMenu = document.getElementById('menu-bar');
             const kitchenMenu = document.getElementById('menu-kitchen');
-            const tabBar = document.getElementById('tab-bar');
+            const barMenu = document.getElementById('menu-bar');
             const tabKitchen = document.getElementById('tab-kitchen');
+            const tabBar = document.getElementById('tab-bar');
 
-            if (type === 'bar') {
-                barMenu.classList.remove('hidden');
-                kitchenMenu.classList.add('hidden');
-                tabBar.className = "px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white shadow-xl";
-                tabKitchen.className = "px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white";
-            } else {
+            if (type === 'kitchen') {
                 kitchenMenu.classList.remove('hidden');
                 barMenu.classList.add('hidden');
-                tabKitchen.className = "px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 text-white shadow-xl";
+                tabKitchen.className = "px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-amber-300 to-amber-500 text-black shadow-xl";
                 tabBar.className = "px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white";
+            } else {
+                barMenu.classList.remove('hidden');
+                kitchenMenu.classList.add('hidden');
+                tabBar.className = "px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 bg-gradient-to-r from-amber-300 to-amber-500 text-black shadow-xl";
+                tabKitchen.className = "px-8 py-3.5 rounded-full text-xs font-heading font-bold uppercase tracking-wider transition-all duration-300 text-slate-400 hover:text-white";
             }
         }
 
+        // --- 7. MODAL & AJAX BOOKING ---
         function openBookingModal(zoneName) {
             document.getElementById('booking-zone').value = zoneName;
             document.getElementById('modal-subtitle').innerText = 'Локация: ' + zoneName;
@@ -1173,12 +1021,12 @@
                     form.classList.add('hidden');
                     document.getElementById('booking-success').classList.remove('hidden');
                 } else {
-                    alert('Ошибка при бронировании.');
+                    alert('Ошибка бронирования.');
                 }
             })
             .catch(err => {
                 console.error(err);
-                alert('Произошла ошибка отправки.');
+                alert('Ошибка отправки.');
             });
         }
     </script>
