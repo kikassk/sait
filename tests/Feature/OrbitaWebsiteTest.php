@@ -20,6 +20,18 @@ class OrbitaWebsiteTest extends TestCase
         $response->assertSee('Забронировать');
     }
 
+    public function test_menu_page_loads_successfully()
+    {
+        $response = $this->get('/menu');
+
+        $response->assertStatus(200);
+        $response->assertSee('МЕНЮ');
+        $response->assertSee('ОРБИТА');
+        $response->assertSee('Авторская Миксология');
+        $response->assertSee('Гастрономия &amp; Авторские Тапас', false);
+        $response->assertSee('Орбита T-15 Kinetic');
+    }
+
     public function test_table_booking_can_be_submitted_successfully()
     {
         $response = $this->postJson('/api/bookings', [

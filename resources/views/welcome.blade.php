@@ -274,6 +274,12 @@
             <!-- Nav Links -->
             <div class="hidden lg:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-zinc-300">
                 <a href="#concept" class="hover:text-white transition-colors">Концепция</a>
+                <a href="/menu" class="text-white bg-zinc-800/80 px-3 py-1 rounded-full border border-zinc-700/60 hover:border-zinc-500 transition-colors flex items-center gap-1.5 font-bold">
+                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span>МЕНЮ</span>
+                </a>
                 <a href="#mixology" class="hover:text-white transition-colors">Миксология</a>
                 <a href="#events" class="hover:text-white transition-colors">DJ Афиша</a>
                 <a href="#floorplan" class="hover:text-white transition-colors">3D Схема</a>
