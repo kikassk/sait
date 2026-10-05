@@ -161,6 +161,134 @@ class HomeController extends Controller
         return view('welcome', compact('events', 'zones', 'menu', 'loyaltyTiers'));
     }
 
+    public function menu()
+    {
+        $categories = [
+            'author-cocktails' => [
+                'title' => 'Авторская Миксология',
+                'subtitle' => 'Футуристические коктейли на основе локальных ботаникалов и редких дистиллятов',
+                'badge' => 'Orbita Mixology Lab',
+                'items' => [
+                    [
+                        'name' => 'Орбита T-15 Kinetic',
+                        'volume' => '140 мл',
+                        'price' => '950 ₽',
+                        'tags' => ['Signature', 'Luminescent'],
+                        'desc' => 'Джин на цветках анчана, кордиал из белого персика, игристое, легкая фруктовая кислинка.',
+                        'profile' => ['Свежесть' => 90, 'Крепость' => 60, 'Сладость' => 45],
+                        'image' => 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Яузский Негрони 2.0',
+                        'volume' => '110 мл',
+                        'price' => '890 ₽',
+                        'tags' => ['Bittersweet', 'Barrel Aged'],
+                        'desc' => 'Выдержанный джин на лимоннике, дубовый амаро, вермут на таежных ягодах и цедра апельсина.',
+                        'profile' => ['Свежесть' => 40, 'Крепость' => 85, 'Сладость' => 50],
+                        'image' => 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Квантовый Эликсир',
+                        'volume' => '150 мл',
+                        'price' => '920 ₽',
+                        'tags' => ['Molecular', 'Citrus'],
+                        'desc' => 'Текила инфьюз с лемонграссом, каффир-лайм, кокосовая вода и дымная икра из мескаля.',
+                        'profile' => ['Свежесть' => 95, 'Крепость' => 70, 'Сладость' => 30],
+                        'image' => 'https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Черная Дыра (Black Hole)',
+                        'volume' => '120 мл',
+                        'price' => '880 ₽',
+                        'tags' => ['Strong', 'Smoky'],
+                        'desc' => 'Торфяной виски, черничный кордиал, растительный уголь, ликер из черной смородины.',
+                        'profile' => ['Свежесть' => 30, 'Крепость' => 90, 'Сладость' => 40],
+                        'image' => 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=80'
+                    ]
+                ]
+            ],
+            'gastronomy' => [
+                'title' => 'Гастрономия & Авторские Тапас',
+                'subtitle' => 'Блюда в стиле азиатского фьюжн и европейского модерна',
+                'badge' => 'Chef Kitchen',
+                'items' => [
+                    [
+                        'name' => 'Роти с тигровой креветкой и трюфелем',
+                        'weight' => '210 г',
+                        'price' => '890 ₽',
+                        'tags' => ['Хит', 'Seafood'],
+                        'desc' => 'Хрустящий хэнд-мейд роти, тигровые креветки, трюфельный крем, кинза и соус понзу.',
+                        'profile' => ['Сытность' => 75, 'Пряность' => 50],
+                        'image' => 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Кампанелли с томленой говядиной',
+                        'weight' => '320 г',
+                        'price' => '940 ₽',
+                        'tags' => ['Chef Special', 'Warm'],
+                        'desc' => 'Домашняя паста кампанелли, рваная говяжья грудинка в соусе пулькоги и пармезан.',
+                        'profile' => ['Сытность' => 95, 'Пряность' => 60],
+                        'image' => 'https://images.unsplash.com/photo-1621996346565-e3def6164286?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Кацу Сандо с хрустящей креветкой',
+                        'weight' => '240 г',
+                        'price' => '780 ₽',
+                        'tags' => ['Street Gourmet'],
+                        'desc' => 'Японский молочный хлеб, сочная котлета из тигровых креветок, капустный слау и соус тонкацу.',
+                        'profile' => ['Сытность' => 80, 'Пряность' => 40],
+                        'image' => 'https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Тартар из тунца с авокадо и юдзу',
+                        'weight' => '180 г',
+                        'price' => '850 ₽',
+                        'tags' => ['Raw & Fresh'],
+                        'desc' => 'Дикий желтоперый тунец, спелое авокадо, икра тобико, заправка из сока юдзу и кунжутного масла.',
+                        'profile' => ['Сытность' => 50, 'Пряность' => 30],
+                        'image' => 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'
+                    ]
+                ]
+            ],
+            'zero-proof' => [
+                'title' => 'Безалкогольные Эликсиры',
+                'subtitle' => 'Освежающие авторские лимонады, тоники и чайные настои',
+                'badge' => 'Zero Proof / 0.0%',
+                'items' => [
+                    [
+                        'name' => 'Брусника / Те Гуань Инь',
+                        'volume' => '350 мл',
+                        'price' => '450 ₽',
+                        'tags' => ['Organic', 'Refreshing'],
+                        'desc' => 'Свежая таежная брусника, элитный улун Те Гуань Инь, натуральный сок лайма и мята.',
+                        'profile' => ['Свежесть' => 100, 'Сладость' => 35],
+                        'image' => 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Ананас / Личи / Чили',
+                        'volume' => '350 мл',
+                        'price' => '450 ₽',
+                        'tags' => ['Exotic Spice'],
+                        'desc' => 'Сочный ананас, пюре из плодов личи и едва уловимая согревающая искорка перца чили.',
+                        'profile' => ['Свежесть' => 85, 'Сладость' => 60],
+                        'image' => 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80'
+                    ],
+                    [
+                        'name' => 'Матча-Тоник Тропик',
+                        'volume' => '300 мл',
+                        'price' => '490 ₽',
+                        'tags' => ['Superfood', 'Energy'],
+                        'desc' => 'Японский церемониальный чай матча, маракуйя и крафтовый тоник с бодрящими пузырьками.',
+                        'profile' => ['Свежесть' => 90, 'Сладость' => 40],
+                        'image' => 'https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=800&q=80'
+                    ]
+                ]
+            ]
+        ];
+
+        return view('menu', compact('categories'));
+    }
+
     public function storeBooking(Request $request)
     {
         $validated = $request->validate([
