@@ -9,7 +9,7 @@
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Syne:wght@500;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Unbounded:wght@400;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -43,8 +43,13 @@
             letter-spacing: -0.01em;
         }
 
-        .font-display { font-family: 'Syne', sans-serif; }
+        .font-display { font-family: 'Unbounded', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* SVG Cyrillic Letter Spacing Fix */
+        svg text {
+            letter-spacing: 0.03em;
+        }
 
         /* Custom Magnetic Cursor & Dot Trailing */
         #custom-cursor-wrapper {
@@ -333,7 +338,7 @@
                 <button onclick="set3DLighting('purple')" id="theme-btn-purple" class="px-3 py-1 rounded-full text-xs font-mono bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer">Quantum Violet</button>
             </div>
 
-            <h1 class="font-display text-5xl sm:text-7xl lg:text-9xl font-black tracking-tight max-w-6xl leading-[1.02] mb-8">
+            <h1 class="font-display text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight max-w-6xl leading-[1.15] mb-8">
                 ДВИГАЙСЯ <br>
                 <span class="gradient-headline">ВМЕСТЕ С ОРБИТОЙ</span>
             </h1>
@@ -353,43 +358,49 @@
 
             <!-- Key Feature Cards Row -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-24 w-full max-w-5xl">
-                <div class="art-card-glass p-8 text-left relative overflow-hidden group">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono text-zinc-500 uppercase">01 / Дневной Режим</span>
-                        <div class="icon-badge">
-                            <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <circle cx="12" cy="12" r="5"/>
-                                <path stroke-linecap="round" d="M12 2v2m0 16v2m10-10h-2M4 12H2m16.07-6.07l-1.41 1.41M7.34 16.66l-1.41 1.41m12.14 0l-1.41-1.41M7.34 7.34L5.93 5.93"/>
-                            </svg>
+                <div class="art-card-glass p-8 text-left relative overflow-hidden group flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono text-zinc-500 uppercase">01 / Дневной Режим</span>
+                            <div class="icon-badge">
+                                <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="5"/>
+                                    <path stroke-linecap="round" d="M12 2v2m0 16v2m10-10h-2M4 12H2m16.07-6.07l-1.41 1.41M7.34 16.66l-1.41 1.41m12.14 0l-1.41-1.41M7.34 7.34L5.93 5.93"/>
+                                </svg>
+                            </div>
                         </div>
+                        <div class="font-display text-xl font-bold text-white mb-2">Fancy Bar & Cowork</div>
                     </div>
-                    <div class="font-display text-2xl font-bold text-white mb-2">Fancy Bar & Cowork</div>
                     <p class="text-xs text-zinc-400 leading-relaxed">Спешелти кофе, ланчи, авторские десерты и акустический комфорт с 12:00 до 18:00.</p>
                 </div>
 
-                <div class="art-card-glass p-8 text-left relative overflow-hidden group border-zinc-600/50">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono text-zinc-400 uppercase">02 / Ночной Матрикс</span>
-                        <div class="icon-badge">
-                            <svg class="w-4 h-4 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2Z"/>
-                            </svg>
+                <div class="art-card-glass p-8 text-left relative overflow-hidden group flex flex-col justify-between h-full border-zinc-600/50">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono text-zinc-400 uppercase">02 / Ночной Матрикс</span>
+                            <div class="icon-badge">
+                                <svg class="w-4 h-4 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2Z"/>
+                                </svg>
+                            </div>
                         </div>
+                        <div class="font-display text-xl font-bold text-white mb-2">Night Matrix Club</div>
                     </div>
-                    <div class="font-display text-2xl font-bold text-white mb-2">Night Matrix Club</div>
                     <p class="text-xs text-zinc-400 leading-relaxed">Авторская миксология, диджей-сеты артистов, светомузыкальная трансформация с 18:00 до 03:00.</p>
                 </div>
 
-                <div class="art-card-glass p-8 text-left relative overflow-hidden group">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono text-zinc-500 uppercase">03 / Локация</span>
-                        <div class="icon-badge">
-                            <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
+                <div class="art-card-glass p-8 text-left relative overflow-hidden group flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono text-zinc-500 uppercase">03 / Локация</span>
+                            <div class="icon-badge">
+                                <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
                         </div>
+                        <div class="font-display text-xl font-bold text-white mb-2">Исторический Особняк</div>
                     </div>
-                    <div class="font-display text-2xl font-bold text-white mb-2">Исторический Особняк</div>
                     <p class="text-xs text-zinc-400 leading-relaxed">330 м² уникальной архитектуры на ул. Яузская, 1/15, Китай-город.</p>
                 </div>
             </div>
@@ -557,7 +568,7 @@
         </section>
 
         <!-- INTERACTIVE FLOORPLAN / BLUEPRINT WITH TOOLTIP INSPECTOR -->
-        <section id="floorplan" class="space-y-12 scroll-mt-32 relative">
+        <section id="floorplan" class="space-y-12 scroll-mt-48 relative pt-16">
             <div class="text-center max-w-3xl mx-auto space-y-3">
                 <div class="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500">
                     <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -573,22 +584,22 @@
             <div class="art-card-glass p-8 sm:p-12 relative overflow-hidden">
 
                 <!-- Interactive Table Inspector Card Overlay -->
-                <div id="blueprint-inspector" class="absolute top-6 right-6 sm:top-10 sm:right-10 z-20 w-72 art-card-glass p-5 border-zinc-700 shadow-2xl space-y-3 transition-all duration-300 pointer-events-none opacity-90">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                        <span id="inspect-title" class="font-display font-bold text-sm text-white">Главный Барный Зал</span>
-                        <span id="inspect-status" class="px-2 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">СВОБОДНО</span>
+                <div id="blueprint-inspector" class="absolute top-6 right-6 sm:top-10 sm:right-10 z-20 w-80 max-w-[calc(100%-3rem)] art-card-glass p-6 border-zinc-700 shadow-2xl space-y-3.5 transition-all duration-300 pointer-events-none opacity-95">
+                    <div class="flex items-center justify-between gap-3 border-b border-zinc-800 pb-2.5">
+                        <span id="inspect-title" class="font-display font-bold text-xs sm:text-sm text-white tracking-tight truncate">Главный Барный Зал</span>
+                        <span id="inspect-status" class="shrink-0 px-2.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">СВОБОДНО</span>
                     </div>
-                    <div class="space-y-1 font-mono text-[11px] text-zinc-400">
-                        <div class="flex justify-between"><span>Вместимость:</span> <span id="inspect-capacity" class="text-white">40 Посадок</span></div>
-                        <div class="flex justify-between"><span>Депозит:</span> <span id="inspect-deposit" class="text-white">от 3 000 ₽ / чел</span></div>
-                        <div class="flex justify-between"><span>Атмосфера:</span> <span id="inspect-vibe" class="text-white">Диджей-стойка</span></div>
+                    <div class="space-y-1.5 font-mono text-[11px] text-zinc-400">
+                        <div class="flex justify-between"><span>Вместимость:</span> <span id="inspect-capacity" class="text-white font-bold">40 Посадок</span></div>
+                        <div class="flex justify-between"><span>Депозит:</span> <span id="inspect-deposit" class="text-white font-bold">от 3 000 ₽ / чел</span></div>
+                        <div class="flex justify-between"><span>Атмосфера:</span> <span id="inspect-vibe" class="text-white font-bold">Контактный Бар</span></div>
                     </div>
                     <div class="text-[10px] text-zinc-500 text-center font-mono">* Нажмите на сектор для бронирования</div>
                 </div>
 
                 <!-- SVG Floorplan Map -->
                 <div class="relative w-full overflow-x-auto">
-                    <svg viewBox="0 0 1000 500" class="w-full min-w-[700px] h-auto rounded-2xl bg-zinc-950 border border-zinc-800">
+                    <svg viewBox="0 0 1000 500" class="w-full min-w-[750px] h-auto rounded-2xl bg-zinc-950 border border-zinc-800">
                         <defs>
                             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
                                 <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
@@ -600,51 +611,51 @@
                         <g id="zone-bar-svg" class="table-node"
                            onmouseenter="inspectTable('Главный Барный Зал', '40 Посадок', 'от 3 000 ₽ / чел', 'Контактный Бар')"
                            onclick="openBookingWithTable('Главный Бар', 'Стол #1 (4 чел)')">
-                            <rect x="50" y="80" width="380" height="340" rx="20" fill="rgba(39, 39, 42, 0.4)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
-                            <text x="70" y="120" fill="#ffffff" font-family="Syne" font-size="20" font-weight="bold">ГЛАВНЫЙ БАРНЫЙ ЗАЛ</text>
-                            <text x="70" y="145" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">40 Посадочных мест // Контактный Бар</text>
+                            <rect x="40" y="60" width="400" height="380" rx="20" fill="rgba(39, 39, 42, 0.4)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+                            <text x="65" y="105" fill="#ffffff" font-family="Unbounded" font-size="16" font-weight="bold">ГЛАВНЫЙ БАРНЫЙ ЗАЛ</text>
+                            <text x="65" y="130" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">40 Посадочных мест // Контактный Бар</text>
 
-                            <rect x="90" y="180" width="80" height="80" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
-                            <text x="110" y="225" fill="#fff" font-size="12" font-family="JetBrains Mono">T-01</text>
+                            <rect x="80" y="170" width="85" height="85" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
+                            <text x="105" y="218" fill="#fff" font-size="12" font-family="JetBrains Mono">T-01</text>
 
-                            <rect x="200" y="180" width="80" height="80" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
-                            <text x="220" y="225" fill="#fff" font-size="12" font-family="JetBrains Mono">T-02</text>
+                            <rect x="195" y="170" width="85" height="85" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
+                            <text x="220" y="218" fill="#fff" font-size="12" font-family="JetBrains Mono">T-02</text>
 
-                            <rect x="310" y="180" width="80" height="80" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
-                            <text x="330" y="225" fill="#fff" font-size="12" font-family="JetBrains Mono">T-03</text>
+                            <rect x="310" y="170" width="85" height="85" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
+                            <text x="335" y="218" fill="#fff" font-size="12" font-family="JetBrains Mono">T-03</text>
 
-                            <rect x="90" y="300" width="300" height="40" rx="10" fill="rgba(255,255,255,0.15)" stroke="#a1a1aa"/>
-                            <text x="170" y="325" fill="#fff" font-size="12" font-family="Syne" font-weight="bold">БАРНАЯ СТОЙКА</text>
+                            <rect x="80" y="310" width="315" height="45" rx="10" fill="rgba(255,255,255,0.15)" stroke="#a1a1aa"/>
+                            <text x="165" y="338" fill="#fff" font-size="13" font-family="Unbounded" font-weight="bold">БАРНАЯ СТОЙКА</text>
                         </g>
 
                         <!-- Zone 2: Lounge Gallery -->
                         <g id="zone-lounge-svg" class="table-node"
                            onmouseenter="inspectTable('Лаунж Галерея', '25 Мест', 'от 5 000 ₽ / чел', 'Панорамный Балкон')"
                            onclick="openBookingWithTable('Лаунж Галерея', 'Балконная Софа #4')">
-                            <rect x="470" y="80" width="480" height="180" rx="20" fill="rgba(39, 39, 42, 0.4)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
-                            <text x="490" y="120" fill="#ffffff" font-family="Syne" font-size="20" font-weight="bold">ЛАУНЖ ГАЛЕРЕЯ (2 ЭТАЖ)</text>
-                            <text x="490" y="145" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">25 Мест // Мягкие диваны // Панорамный вид</text>
+                            <rect x="470" y="60" width="490" height="200" rx="20" fill="rgba(39, 39, 42, 0.4)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+                            <text x="495" y="105" fill="#ffffff" font-family="Unbounded" font-size="14" font-weight="bold" letter-spacing="0.05em">ЛАУНЖ ГАЛЕРЕЯ (2 ЭТАЖ)</text>
+                            <text x="495" y="130" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">25 Мест // Мягкие диваны // Панорамный вид</text>
 
-                            <rect x="500" y="170" width="120" height="60" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
-                            <text x="535" y="205" fill="#fff" font-size="12" font-family="JetBrains Mono">L-SOFA 1</text>
+                            <rect x="495" y="165" width="130" height="65" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
+                            <text x="530" y="203" fill="#fff" font-size="12" font-family="JetBrains Mono">L-SOFA 1</text>
 
-                            <rect x="650" y="170" width="120" height="60" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
-                            <text x="685" y="205" fill="#fff" font-size="12" font-family="JetBrains Mono">L-SOFA 2</text>
+                            <rect x="650" y="165" width="130" height="65" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
+                            <text x="685" y="203" fill="#fff" font-size="12" font-family="JetBrains Mono">L-SOFA 2</text>
 
-                            <rect x="800" y="170" width="120" height="60" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
-                            <text x="835" y="205" fill="#fff" font-size="12" font-family="JetBrains Mono">L-SOFA 3</text>
+                            <rect x="805" y="165" width="130" height="65" rx="12" fill="rgba(255,255,255,0.08)" stroke="#71717a"/>
+                            <text x="840" y="203" fill="#fff" font-size="12" font-family="JetBrains Mono">L-SOFA 3</text>
                         </g>
 
                         <!-- Zone 3: VIP Cigar Lounge -->
                         <g id="zone-vip-svg" class="table-node"
                            onmouseenter="inspectTable('VIP Сигарный Кабинет', '12 Мест', 'от 10 000 ₽ / чел', 'Приватный Особняк')"
                            onclick="openBookingWithTable('VIP Сигарная', 'Кабинет VIP (12 чел)')">
-                            <rect x="470" y="280" width="480" height="140" rx="20" fill="rgba(39, 39, 42, 0.4)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
-                            <text x="490" y="320" fill="#ffffff" font-family="Syne" font-size="20" font-weight="bold">VIP СИГАРНЫЙ КАБИНЕТ</text>
-                            <text x="490" y="345" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">12 Мест // Приватная винная комната</text>
+                            <rect x="470" y="280" width="490" height="160" rx="20" fill="rgba(39, 39, 42, 0.4)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+                            <text x="495" y="320" fill="#ffffff" font-family="Unbounded" font-size="16" font-weight="bold">VIP СИГАРНЫЙ КАБИНЕТ</text>
+                            <text x="495" y="345" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">12 Мест // Приватная винная комната</text>
 
-                            <rect x="500" y="360" width="420" height="40" rx="10" fill="rgba(255,255,255,0.12)" stroke="#fff"/>
-                            <text x="620" y="385" fill="#fff" font-size="12" font-family="Syne" font-weight="bold">ПРИВАТНЫЙ ОВАЛЬНЫЙ СТОЛ</text>
+                            <rect x="495" y="370" width="440" height="45" rx="10" fill="rgba(255,255,255,0.12)" stroke="#fff"/>
+                            <text x="585" y="398" fill="#fff" font-size="13" font-family="Unbounded" font-weight="bold">ПРИВАТНЫЙ ОВАЛЬНЫЙ СТОЛ</text>
                         </g>
                     </svg>
                 </div>
